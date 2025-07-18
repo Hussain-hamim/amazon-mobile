@@ -1,9 +1,14 @@
-import { useSignIn, useSignUp } from "@clerk/clerk-expo";
+import {
+  isClerkAPIResponseError,
+  useSignIn,
+  useSignUp,
+} from "@clerk/clerk-expo";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Text,
@@ -14,14 +19,14 @@ import {
 import { z } from "zod";
 
 const signInSchema = z.object({
-  email: z.string().min(3, "Please enter a valid mobile number or email"),
-  password: z.string().min(1, "Please enter your password"),
+  email: z.string().email("Please enter a valid mobile number or email"),
+  password: z.string().min(3, "Please enter your password"),
 });
 type SignInForm = z.infer<typeof signInSchema>;
 
 export default function SignIn() {
   const { isLoaded: isLoadedSignUp, signUp } = useSignUp();
-  const { isLoaded: isLoadedSignIn, signIn } = useSignIn();
+  const { isLoaded: isLoadedSignIn, signIn, setActive } = useSignIn();
   const [showPassword, setShowPassword] = useState();
   const router = useRouter();
   const {
@@ -36,7 +41,37 @@ export default function SignIn() {
     },
   });
 
-  const onSubmit = async () => {
+  const onSubmit = async (data: SignInForm) => {
+    if (!isLoadedSignIn) return;
+
+    try {
+      const signInAttempt = await signIn.create({
+        identifier: data.email,
+        password: data.password,
+      });
+
+      if (signInAttempt.status === "complete") {
+        await setActive({ session: signInAttempt.createdSessionId });
+        router.dismissTo("/(tabs)/profile");
+      } else {
+        console.log(JSON.stringify(signInAttempt, null, 2));
+      }
+    } catch (err) {
+      // See https://clerk.com/docs/custom-flows/error-handling
+      // for more info on error handling
+      console.error(JSON.stringify(err, null, 2));
+      if (isClerkAPIResponseError(err)) {
+        const errors = err.errors;
+        if (errors[0].code === "form_identifier_not_found") {
+          createAccount(data);
+        } else {
+          Alert.alert("Error", "An error occurred while signing in");
+        }
+      }
+    }
+  };
+
+  const createAccount = async (data: SignInForm) => {
     //
   };
 
@@ -46,7 +81,7 @@ export default function SignIn() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       className="flex-1 bg-white"
     >
       <View className="p-4">
@@ -79,7 +114,7 @@ export default function SignIn() {
           name="password"
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
-              className="border text-gray border-gray-300 rounded-md px-3 py-2 mb-2 bg-white"
+              className="border text-gray text-black border-gray-300 rounded-md px-3 py-2 mb-2 bg-white"
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
