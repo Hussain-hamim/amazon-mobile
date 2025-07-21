@@ -1,57 +1,57 @@
-import CustomTabBar from "@/components/navigation/CustomTabBar";
-import { StyledTabs } from "@/components/navigation/tabs";
-import { Ionicons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import CustomTabBar from '@/components/navigation/CustomTabBar';
+import { StyledTabs } from '@/components/navigation/tabs';
+import { Ionicons } from '@expo/vector-icons';
+import { Tabs, useRouter } from 'expo-router';
 
 const Layout = () => {
+  const router = useRouter();
+
   return (
     <StyledTabs
-      headerClassName="bg-dark text-white"
+      headerClassName='bg-dark text-white'
       tabBar={(props) => <CustomTabBar {...props} />}
     >
       <Tabs.Screen
-        name="index"
+        name='(index)'
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" color={color} size={size} />
+            <Ionicons name='home-outline' color={color} size={size} />
           ),
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name='profile'
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" color={color} size={size} />
+            <Ionicons name='person-outline' color={color} size={size} />
           ),
         }}
       />
       <Tabs.Screen
-        name="cart"
+        name='cart'
         options={{
-          title: "Cart",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="cart-outline" color={color} size={size} />
+            <Ionicons name='cart-outline' color={color} size={size} />
           ),
         }}
       />
       <Tabs.Screen
-        name="more"
+        name='more'
         options={{
-          title: "Rufus",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="menu-outline" color={color} size={size} />
+            <Ionicons name='menu-outline' color={color} size={size} />
           ),
         }}
       />
       <Tabs.Screen
-        name="rufus"
-        options={{
-          title: "Rufus",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" color={color} size={size} />
-          ),
-        }}
+        name='rufus'
+        listeners={() => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            router.push('/(modal)/rufus');
+          },
+        })}
       />
     </StyledTabs>
   );
