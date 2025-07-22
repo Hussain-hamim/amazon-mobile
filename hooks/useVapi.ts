@@ -19,7 +19,9 @@
 // }
 
 // export function useVapi() {
-//   const [callStatus, setCallStatus] = useState<CALL_STATUS>(CALL_STATUS.INACTIVE);
+//   const [callStatus, setCallStatus] = useState<CALL_STATUS>(
+//     CALL_STATUS.INACTIVE
+//   );
 //   const [messages, setMessages] = useState<Message[]>([]);
 //   const [isSpeaking, setIsSpeaking] = useState(false);
 //   const { user } = useUser();
@@ -75,11 +77,7 @@
 //       });
 //     } else {
 //       const id = process.env.EXPO_PUBLIC_VAPI_WORKFLOW_ID;
-//       await vapi.start(null, {}, null, id, {
-//         variableValues: {
-//           name: user?.firstName,
-//         },
-//       });
+//       await vapi.start(id);
 //     }
 //   };
 

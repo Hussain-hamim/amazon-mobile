@@ -112,10 +112,10 @@ export default function SignIn() {
       <Stack.Screen options={{ title: 'Login' }} />
       <StatusBar style='light' />
       <View className='p-4'>
-        <Text className='text-2xl font-bold mb-2'>
+        <Text className='text-2xl text-gray-700 font-bold mb-2'>
           Sign in or create an account
         </Text>
-        <Text className='text-base font-medium mb-2'>
+        <Text className='text-base text-gray-700 font-medium mb-2'>
           Enter mobile number or email
         </Text>
         <Controller
@@ -123,7 +123,7 @@ export default function SignIn() {
           name='email'
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
-              className='border border-gray-300 rounded-md px-3 py-2 mb-2 bg-white'
+              className='border border-gray-300 text-gray-700 rounded-md px-3 py-2 mb-2 bg-white'
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -159,7 +159,7 @@ export default function SignIn() {
         )}
 
         <TouchableOpacity
-          className='flex-row items-center mb-4'
+          className='flex-row  items-center mb-4'
           onPress={() => setShowPassword((prev) => !prev)}
           accessibilityRole='checkbox'
           accessibilityState={{ checked: showPassword }}
@@ -172,7 +172,7 @@ export default function SignIn() {
           >
             {showPassword && <View className='w-3 h-3 bg-green-600 rounded' />}
           </View>
-          <Text className='text-base'>Show password</Text>
+          <Text className='text-base  text-gray-700'>Show password</Text>
         </TouchableOpacity>
 
         <TouchableOpacity

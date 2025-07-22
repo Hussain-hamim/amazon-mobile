@@ -9,6 +9,7 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack, useRouter } from 'expo-router';
 import { LogBox, TouchableOpacity, useColorScheme } from 'react-native';
 
@@ -19,6 +20,15 @@ if (!publishableKey) {
   );
 }
 LogBox.ignoreLogs(['Clerk: Clerk has been loaded with development keys']);
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      staleTime: 1000 * 60 * 5,
+    },
+  },
+});
 
 const InitialLayout = () => {
   const router = useRouter();
@@ -70,13 +80,15 @@ export default function RootLayout() {
       tokenCache={tokenCache}
       __experimental_passkeys={passkeys}
     >
-      <ClerkLoaded>
-        <ThemeProvider
-          value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-        >
-          <InitialLayout />
-        </ThemeProvider>
-      </ClerkLoaded>
+      <QueryClientProvider client={queryClient}>
+        <ClerkLoaded>
+          <ThemeProvider
+            value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+          >
+            <InitialLayout />
+          </ThemeProvider>
+        </ClerkLoaded>
+      </QueryClientProvider>
     </ClerkProvider>
   );
 }

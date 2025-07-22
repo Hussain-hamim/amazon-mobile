@@ -1,7 +1,14 @@
 // import { CALL_STATUS, useVapi } from '@/hooks/useVapi';
-// import { MessageTypeEnum } from '@/utils/conversation.types';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import {
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 const SUGGESTED_PHRASES = [
   'What do I need a shaker for?',
@@ -33,8 +40,9 @@ const Rufus = () => {
       className='flex-1 bg-white pb-safe mb-10'
       contentContainerClassName='pb-12'
     >
+      <StatusBar style='light' />
       <View className='flex-1 items-center justify-center p-4'>
-        <Text className='text-lg font-semibold mb-6 text-center'>
+        <Text className='text-lg text-gray-800 font-semibold mb-6 text-center'>
           What do you need help with today?
         </Text>
         {/* Suggested phrases */}
@@ -56,8 +64,8 @@ const Rufus = () => {
         </View>
       </View>
 
-      <View className='flex-1 px-4'>
-        {/* {messages
+      {/* <View className='flex-1 px-4'>
+        {messages
           .filter((m) => m.type === MessageTypeEnum.TRANSCRIPT)
           .map((message, index) => (
             <View
@@ -74,42 +82,27 @@ const Rufus = () => {
                 </Text>
               </View>
             </View>
-          ))} */}
-      </View>
+          ))}
+      </View> */}
 
       {/* Input with mic icon */}
-      {/* <View className='px-4 pb-6'>
-        {callStatus === CALL_STATUS.CONNECTING && (
-          <Text className='mb-2 self-center'>Connecting to support....</Text>
-        )}
+      <View className='px-4 pb-6'>
+        <View className='flex-row items-center bg-gray-100 rounded-full px-4 py-2 shadow-md'>
+          <TextInput
+            className='flex-1 text-base'
+            placeholder='Ask Rufus a question'
+            placeholderTextColor='#888'
+            style={{ minHeight: 40 }}
+          />
 
-        {callStatus === CALL_STATUS.ACTIVE && (
           <TouchableOpacity
-            className='mb-2 self-center flex-row items-center gap-2'
-            onPress={stop}
+            className='ml-2'
+            // onPress={() => startCall('workflow')}
           >
-            <Ionicons name={'stop-circle-outline'} size={34} />
-            <Text className=' text-lg'>Stop Call</Text>
+            <Ionicons name={'mic-outline'} size={24} color='#2563eb' />
           </TouchableOpacity>
-        )}
-        {callStatus === CALL_STATUS.INACTIVE && (
-          <View className='flex-row items-center bg-gray-100 rounded-full px-4 py-2 shadow-md'>
-            <TextInput
-              className='flex-1 text-base'
-              placeholder='Ask Rufus a question'
-              placeholderTextColor='#888'
-              style={{ minHeight: 40 }}
-            />
-
-            <TouchableOpacity
-              className='ml-2'
-              onPress={() => startCall('workflow')}
-            >
-              <Ionicons name={'mic-outline'} size={24} color='#2563eb' />
-            </TouchableOpacity>
-          </View>
-        )}
-      </View> */}
+        </View>
+      </View>
     </ScrollView>
   );
 };

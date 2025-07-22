@@ -1,67 +1,257 @@
 import { SignedIn, SignedOut, useAuth, useUser } from '@clerk/clerk-expo';
+import {
+  AntDesign,
+  FontAwesome,
+  Ionicons,
+  MaterialIcons,
+} from '@expo/vector-icons';
 import { Link, useRouter } from 'expo-router';
-import { Button, Text, TouchableOpacity, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import React, { useState } from 'react';
+import {
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+
+const PLACEHOLDER_AVATAR =
+  'https://via.placeholder.com/150/cccccc/808080?text=User';
 
 export default function Profile() {
   const { user } = useUser();
   const { signOut } = useAuth();
   const router = useRouter();
+  const [passkeyMessage, setPasskeyMessage] = useState<string | null>(null);
 
   const createClerkPasskey = async () => {
     if (!user) return;
-
+    setPasskeyMessage(null);
     try {
       await user?.createPasskey();
-    } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
-      console.error('Error:', JSON.stringify(err, null, 2));
+      setPasskeyMessage('Passkey registered successfully!');
+    } catch (err: any) {
+      let msg = 'Failed to register passkey.';
+      if (err && err.errors && err.errors[0]?.message) {
+        msg = err.errors[0].message;
+      } else if (err && err.message) {
+        msg = err.message;
+      }
+      setPasskeyMessage(msg);
     }
   };
 
+  // Mock user data for Amazon-like profile
+  const userData = {
+    name: user?.firstName || 'Welcome dear!',
+    email: user?.primaryEmailAddress?.emailAddress || 'user@example.com',
+    primeMember: true,
+    orders: 12,
+    wishlist: 5,
+    addresses: 2,
+  };
+
+  const accountOptions = [
+    { id: '1', title: 'Your Orders', icon: 'local-shipping' },
+    { id: '2', title: 'Login & Security', icon: 'shield' },
+    { id: '3', title: 'Your Addresses', icon: 'location-on' },
+    { id: '4', title: 'Payment Options', icon: 'credit-card' },
+  ];
+
   return (
-    <View>
+    <ScrollView className='flex-1 bg-gray-100'>
+      <StatusBar style='light' />
       <SignedIn>
-        <View className='pt-10 px-8 items-center'>
-          <View className='pt-10 px-8 gap-5 items-center w-full'>
-            <Text className='text-3xl text-center font-bold mb-2'>
-              Welcome!
-            </Text>
-            <Text className='text-lg text-center mb-4'>You are signed in.</Text>
-            <Button
-              title='Create Passkey'
-              onPress={createClerkPasskey}
-              accessibilityLabel='Create a new passkey'
+        {/* User Profile Section */}
+        <View className='bg-white mt-1 p-4'>
+          <View className='flex-row items-center'>
+            <Image
+              source={{ uri: user?.imageUrl || PLACEHOLDER_AVATAR }}
+              className='w-16 h-16 rounded-full'
             />
-            <View style={{ height: 12 }} />
-            <Button
-              title='Sign Out'
-              onPress={() => signOut()}
-              color='#d9534f'
-              accessibilityLabel='Sign out of your account'
-            />
+            <View className='ml-4'>
+              <Text className='text-lg font-bold'>{userData.name}</Text>
+              <Text className='text-gray-600'>{userData.email}</Text>
+              {userData.primeMember && (
+                <View className='flex-row items-center mt-1'>
+                  <Image
+                    source={{
+                      uri: 'https://via.placeholder.com/80x30/232F3E/FFFFFF?text=Prime',
+                    }}
+                    className='w-16 h-6'
+                    resizeMode='contain'
+                  />
+                  <Text className='text-xs text-gray-500 ml-1'>Member</Text>
+                </View>
+              )}
+              {/* Passkey registration button */}
+              <TouchableOpacity
+                className='mt-2 bg-blue-600 px-3 max-w-32 py-2 rounded-full'
+                onPress={createClerkPasskey}
+                activeOpacity={0.85}
+              >
+                <Text className='text-white text-xs font-semibold'>
+                  Register Passkey
+                </Text>
+              </TouchableOpacity>
+              {passkeyMessage && (
+                <Text
+                  className={`mt-2 text-xs font-medium ${passkeyMessage.includes('success') ? 'text-green-600' : 'text-red-500'}`}
+                >
+                  {passkeyMessage}
+                </Text>
+              )}
+            </View>
+          </View>
+
+          <View className='flex-row justify-between mt-6'>
+            <View className='items-center'>
+              <Text className='text-lg font-bold'>{userData.orders}</Text>
+              <Text className='text-gray-600 text-sm'>Orders</Text>
+            </View>
+            <View className='items-center'>
+              <Text className='text-lg font-bold'>{userData.wishlist}</Text>
+              <Text className='text-gray-600 text-sm'>Wishlist</Text>
+            </View>
+            <View className='items-center'>
+              <Text className='text-lg font-bold'>{userData.addresses}</Text>
+              <Text className='text-gray-600 text-sm'>Addresses</Text>
+            </View>
+            <View className='items-center'>
+              <Text className='text-lg font-bold'>0</Text>
+              <Text className='text-gray-600 text-sm'>Coupons</Text>
+            </View>
           </View>
         </View>
+
+        {/* Account Options */}
+        <View className='mt-4 bg-white'>
+          <Text className='font-bold p-4 pb-2 text-gray-800'>Your Account</Text>
+          {accountOptions.map((item) => (
+            <Link key={item.id} href={`/profile/${item.id}`} asChild>
+              <Pressable className='flex-row items-center justify-between p-4 border-b border-gray-100'>
+                <View className='flex-row items-center'>
+                  <MaterialIcons
+                    name={item.icon as any}
+                    size={24}
+                    color='#374151'
+                  />
+                  <Text className='ml-4 text-gray-900 font-medium'>
+                    {item.title}
+                  </Text>
+                </View>
+                <AntDesign name='right' size={16} color='#6B7280' />
+              </Pressable>
+            </Link>
+          ))}
+        </View>
+
+        {/* Other Options */}
+        <View className='mt-4 bg-white'>
+          <Text className='font-bold p-4 pb-2 text-gray-800'>Other</Text>
+          <Pressable className='flex-row items-center justify-between p-4 border-b border-gray-100'>
+            <View className='flex-row items-center'>
+              <FontAwesome name='heart' size={24} color='#374151' />
+              <Text className='ml-4 text-gray-900 font-medium'>
+                Your Wish List
+              </Text>
+            </View>
+            <AntDesign name='right' size={16} color='#6B7280' />
+          </Pressable>
+          <Pressable className='flex-row items-center justify-between p-4 border-b border-gray-100'>
+            <View className='flex-row items-center'>
+              <Ionicons name='thumbs-up' size={24} color='#374151' />
+              <Text className='ml-4 text-gray-900 font-medium'>
+                Your Recommendations
+              </Text>
+            </View>
+            <AntDesign name='right' size={16} color='#6B7280' />
+          </Pressable>
+        </View>
+
+        {/* Sign Out */}
+        <Pressable
+          className='mt-4 bg-white p-4 items-center'
+          onPress={() => signOut()}
+        >
+          <Text className='text-red-500 font-bold'>Sign Out</Text>
+        </Pressable>
       </SignedIn>
+
       <SignedOut>
-        <View className='pt-10 px-8 items-center'>
-          <Text className='text-3xl text-center font-bold mb-4'>
-            Sign In / Create Account
+        {/* Guest View */}
+        <View className='bg-white mt-1 p-6 items-center'>
+          <View
+            style={{
+              width: 96,
+              height: 96,
+              marginBottom: 24,
+              // backgroundColor: '#fff',
+              borderRadius: 48,
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden',
+              borderWidth: 1,
+              borderColor: '#e5e7eb',
+            }}
+          >
+            <Ionicons name='person' color={'black'} size={40} />
+          </View>
+
+          <Text className='text-2xl font-bold text-gray-700 text-center mb-2'>
+            Welcome to Amazon
           </Text>
+          <Text className='text-gray-600 text-center mb-8'>
+            Sign in for the best shopping experience
+          </Text>
+
           <Link href='/signin' asChild>
             <TouchableOpacity
-              className='bg-primary py-3 px-8 rounded-lg border border-dark shadow-md w-full'
-              activeOpacity={0.85}
-              accessibilityRole='button'
-              accessibilityLabel='Sign in or create an account'
+              className='bg-[#FFD814] w-full py-3 rounded-md shadow-sm mb-4'
+              activeOpacity={0.9}
             >
-              <Text className='text-center text-base font-semibold text-dark'>
-                Sign In / Create Account
+              <Text className='text-center text-gray-600 font-bold'>
+                Sign in securely
               </Text>
             </TouchableOpacity>
           </Link>
+
+          <Link href='/signin' asChild>
+            <TouchableOpacity
+              className='border border-gray-300 w-full py-3 rounded-md'
+              activeOpacity={0.9}
+            >
+              <Text className='text-center text-gray-600 font-medium'>
+                Create your Amazon account
+              </Text>
+            </TouchableOpacity>
+          </Link>
+
+          <View className='mt-8 w-full'>
+            <Text className='text-center text-gray-500 text-xs mb-2'>
+              By continuing, you agree to Amazon's
+            </Text>
+            <View className='flex-row justify-center'>
+              <Pressable>
+                <Text className='text-blue-500 text-xs'>Conditions of Use</Text>
+              </Pressable>
+              <Text className='text-gray-500 text-xs mx-1'>and</Text>
+              <Pressable>
+                <Text className='text-blue-500 text-xs'>Privacy Notice</Text>
+              </Pressable>
+            </View>
+          </View>
         </View>
       </SignedOut>
-    </View>
+
+      {/* Footer */}
+      <View className='py-4 px-4 mt-1 items-center'>
+        <Text className='text-gray-500 text-xs'>
+          © 2025-2025, Amazon Mobile.
+        </Text>
+      </View>
+    </ScrollView>
   );
 }
