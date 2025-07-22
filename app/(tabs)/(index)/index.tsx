@@ -6,6 +6,8 @@ export default function Index() {
   const [data, setData] = useState<any>(null);
   const router = useRouter();
 
+  console.log(data);
+
   useEffect(() => {
     fetch(`${process.env.EXPO_PUBLIC_API_URL}/articles`, {
       headers: {
@@ -25,9 +27,7 @@ export default function Index() {
         alignItems: 'center',
       }}
     >
-      <Text className='dark:text-white' onPress={() => router.push('/(tabs)')}>
-        Hello world
-      </Text>
+      <Text className='dark:text-white'>Hello world</Text>
       <Text className='text-green-500 text-2xl'>
         {data && JSON.stringify(data[1])}
       </Text>

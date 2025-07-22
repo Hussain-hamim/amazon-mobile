@@ -88,7 +88,7 @@ export default function Profile() {
               )}
               {/* Passkey registration button */}
               <TouchableOpacity
-                className='mt-2 bg-blue-600 px-3 max-w-32 py-2 rounded-full'
+                className='mt-2 bg-blue-600 px-3 max-w-40 py-2 rounded-full'
                 onPress={createClerkPasskey}
                 activeOpacity={0.85}
               >

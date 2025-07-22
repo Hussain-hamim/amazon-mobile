@@ -1,4 +1,5 @@
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
+// const API_URL = 'http://localhost:3000';
 
 export interface Article {
   id: number;
@@ -36,11 +37,17 @@ export const getArticleById = async (id: number): Promise<Article> => {
   return response.json();
 };
 
-export const createOrder = async (items: (Article & { quantity: number })[], token: string) => {
+export const createOrder = async (
+  items: (Article & { quantity: number })[],
+  token: string
+) => {
   const response = await fetch(`${API_URL}/orders`, {
     method: 'POST',
     body: JSON.stringify({
-      items: items.map((item) => ({ articleId: item.id, quantity: item.quantity })),
+      items: items.map((item) => ({
+        articleId: item.id,
+        quantity: item.quantity,
+      })),
     }),
     headers: {
       'Content-Type': 'application/json',
