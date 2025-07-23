@@ -1,179 +1,308 @@
-// import VapiOverlay from '@/components/VapiOverlay';
-import { getArticles } from '@/utils/api';
-import { Ionicons } from '@expo/vector-icons';
-import { useQuery } from '@tanstack/react-query';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Animated,
   Dimensions,
   FlatList,
   Image,
-  ScrollView,
+  RefreshControl,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-// import { useMMKVBoolean } from 'react-native-mmkv';
-import Animated, {
-  useAnimatedScrollHandler,
+import {
   useAnimatedStyle,
   useSharedValue,
+  withSpring,
 } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-const dummyHeros = [
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+const heroBanners = [
   {
-    text: 'Home when you are away',
-    color: '#0000ff',
+    id: '1',
+    title: 'Summer Collection',
+    subtitle: 'Up to 50% off',
+    image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b',
+    color: '#FF6B6B',
   },
   {
-    text: 'New tech, new possibilities',
-    color: '#00ff00',
+    id: '2',
+    title: 'Tech Gadgets',
+    subtitle: 'New arrivals',
+    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475',
+    color: '#4ECDC4',
+  },
+  {
+    id: '3',
+    title: 'Home Essentials',
+    subtitle: 'Limited time offer',
+    image: 'https://images.unsplash.com/photo-1556911220-bff31c812dba',
+    color: '#FFBE0B',
   },
 ];
-export default function Index() {
-  // const [showOverlay] = useMMKVBoolean('vapi.overlay');
 
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['articles'],
-    queryFn: getArticles,
-  });
+const categories = [
+  { id: '1', name: 'Electronics', icon: 'smartphone' },
+  { id: '2', name: 'Fashion', icon: 'shopping-bag' },
+  { id: '3', name: 'Home', icon: 'home' },
+  { id: '4', name: 'Beauty', icon: 'smile' },
+  { id: '5', name: 'Sports', icon: 'dribbble' },
+  { id: '6', name: 'Books', icon: 'book' },
+];
 
-  const scrollOffset = useSharedValue(0);
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: (event) => {
-      if (event.contentOffset.y > 50) {
-        scrollOffset.value = 50 - event.contentOffset.y;
-      } else {
-        scrollOffset.value = 0;
-      }
-    },
-  });
+const deals = [
+  { id: '1', name: 'Flash Sale', icon: 'zap' },
+  { id: '2', name: 'Top Deals', icon: 'tag' },
+  { id: '3', name: 'New Arrivals', icon: 'star' },
+  { id: '4', name: 'Best Sellers', icon: 'award' },
+];
 
-  const scrollStyle = useAnimatedStyle(() => {
+export default function HomeScreen() {
+  const [products, setProducts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [activeBanner, setActiveBanner] = useState(0);
+  const scrollY = useSharedValue(0);
+
+  const fetchProducts = async () => {
+    try {
+      const url = 'https://e206fbebdde0.ngrok-free.app/articles';
+      const response = await fetch(url);
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      console.error('Fetch error:', error);
+    } finally {
+      setIsLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchProducts();
+  };
+
+  const handleBannerScroll = (event: any) => {
+    const contentOffset = event.nativeEvent.contentOffset.x;
+    const index = Math.round(contentOffset / SCREEN_WIDTH);
+    setActiveBanner(index);
+  };
+
+  const headerStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateY: scrollOffset.value }],
+      height: withSpring(scrollY.value > 10 ? 70 : 120),
+      paddingTop: withSpring(scrollY.value > 10 ? 10 : 40),
+    };
+  });
+
+  const searchStyle = useAnimatedStyle(() => {
+    return {
+      opacity: withSpring(scrollY.value > 50 ? 0 : 1),
+      transform: [{ translateY: withSpring(scrollY.value > 50 ? -20 : 0) }],
     };
   });
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size='large' />
-        <Text>Loading articles...</Text>
-      </View>
-    );
-  }
-
-  if (isError) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Error loading articles: {error.message}</Text>
-      </View>
-    );
-  }
-
-  if (data && data.length === 0) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>No articles found.</Text>
-      </View>
+      <SafeAreaView className='flex-1 items-center justify-center bg-gray-50'>
+        <ActivityIndicator size='large' color='#3B82F6' />
+        <Text className='mt-4 text-lg text-gray-600'>Loading products...</Text>
+      </SafeAreaView>
     );
   }
 
   return (
-    <>
-      {/* {showOverlay && <VapiOverlay />} */}
-      <Animated.ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerClassName='flex-1 flex-row items-center px-4 py-4 gap-6'
-        className='absolute top-[125px] left-0 w-full bg-dark h-14'
-        style={[scrollStyle]}
-      >
-        <StatusBar style='light' />
-        <View className='flex-row items-center'>
-          <Ionicons name='location-outline' size={20} className='text-white' />
-          <Text className='text-white text-lg font-bold'>48163</Text>
-        </View>
-        {['Alexa Lists', 'Prime', 'Video', 'Musik'].map((item) => (
-          <TouchableOpacity key={item}>
-            <Text className='text-white text-md font-semibold'>{item}</Text>
-          </TouchableOpacity>
-        ))}
-      </Animated.ScrollView>
+    <SafeAreaView className='flex-1 bg-gray-50'>
+      <StatusBar style='dark' />
 
-      <Animated.FlatList
-        onScroll={scrollHandler}
+      {/* Animated Header */}
+      <Animated.View
+        className='w-full bg-white px-4 shadow-sm z-50 pb-4'
+        style={headerStyle}
+      >
+        <Animated.View style={searchStyle}>
+          <TouchableOpacity className='mt-3 flex-row items-center bg-gray-100 rounded-full px-4 py-3'>
+            <Ionicons name='search' size={18} color='#6B7280' />
+            <Text className='ml-2 text-gray-500'>Search for products...</Text>
+          </TouchableOpacity>
+        </Animated.View>
+      </Animated.View>
+
+      <FlatList
+        data={products}
+        keyExtractor={(item) => item.id.toString()}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        onScroll={(e) => {
+          scrollY.value = e.nativeEvent.contentOffset.y;
+        }}
         scrollEventThrottle={16}
-        data={[1]}
-        style={{ zIndex: -1 }}
-        ListHeaderComponent={() => (
+        ListHeaderComponent={
           <>
-            {/* Hero banner */}
-            <ScrollView
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              className='flex-1 mb-10'
-            >
-              {dummyHeros.map((hero) => (
-                <View
-                  key={hero.text}
-                  style={{
-                    width: Dimensions.get('window').width,
-                    height: 250,
-                    backgroundColor: hero.color,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Text className='text-white text-3xl font-bold text-center'>
-                    {hero.text}
-                  </Text>
-                </View>
-              ))}
-            </ScrollView>
-          </>
-        )}
-        renderItem={() => (
-          <View className='mx-4'>
-            {data && (
+            {/* Hero Banners */}
+            <View className='h-64'>
               <FlatList
-                data={[...data]}
-                keyExtractor={(item, index) => index.toString()}
-                ListHeaderComponent={() => (
-                  <Text className='text-2xl font-bold mb-4'>
-                    Top picks for you
-                  </Text>
-                )}
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                data={heroBanners}
+                keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                  <Link
-                    href={`/(tabs)/${item.id}`}
-                    asChild
-                    style={{ marginBottom: 10 }}
+                  <View
+                    className='w-full h-full relative'
+                    style={{ width: SCREEN_WIDTH }}
                   >
-                    <TouchableOpacity className='flex-row items-center gap-4 flex-wrap'>
-                      <Image
-                        source={{ uri: item.imageUrl }}
-                        className='rounded-lg w-28 h-28'
-                      />
-                      <View className='flex-1'>
-                        <Text className='text-lg font-bold'>{item.title}</Text>
-                        <Text className='text-sm text-gray-500'>
-                          {item.description}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                  </Link>
+                    <Image
+                      source={{ uri: item.image }}
+                      className='w-full h-full'
+                      resizeMode='cover'
+                    />
+                    <View className='absolute bottom-0 left-0 right-0 p-6 bg-black/30'>
+                      <Text className='text-white text-2xl font-bold'>
+                        {item.title}
+                      </Text>
+                      <Text className='text-white text-lg'>
+                        {item.subtitle}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+                onScroll={handleBannerScroll}
+              />
+              <View className='absolute bottom-4 left-0 right-0 flex-row justify-center'>
+                {heroBanners.map((_, index) => (
+                  <View
+                    key={index}
+                    className={`w-2 h-2 rounded-full mx-1 ${activeBanner === index ? 'bg-white' : 'bg-white/50'}`}
+                  />
+                ))}
+              </View>
+            </View>
+
+            {/* Categories */}
+            <View className='px-4 py-6'>
+              <Text className='text-xl font-bold text-gray-900 mb-4'>
+                Shop by Category
+              </Text>
+              <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                data={categories}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <TouchableOpacity className='items-center mx-2'>
+                    <View className='bg-blue-50 p-4 rounded-full'>
+                      <Feather name={item.icon} size={24} color='#3B82F6' />
+                    </View>
+                    <Text className='mt-2 text-sm text-gray-700'>
+                      {item.name}
+                    </Text>
+                  </TouchableOpacity>
                 )}
               />
-            )}
-          </View>
+            </View>
+
+            {/* Deals */}
+            <View className='px-4 py-2'>
+              <Text className='text-xl font-bold text-gray-900 mb-4'>
+                Hot Deals
+              </Text>
+              <View className='flex-row flex-wrap justify-between'>
+                {deals.map((deal) => (
+                  <TouchableOpacity
+                    key={deal.id}
+                    className='w-[48%] bg-white rounded-lg p-4 mb-4 shadow-sm'
+                  >
+                    <View className='flex-row items-center'>
+                      <View className='bg-blue-100 p-2 rounded-full'>
+                        <Feather name={deal.icon} size={20} color='#3B82F6' />
+                      </View>
+                      <Text className='ml-3 font-medium text-gray-800'>
+                        {deal.name}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
+            {/* Products */}
+            <View className='px-4 py-2'>
+              <View className='flex-row justify-between items-center mb-4'>
+                <Text className='text-xl font-bold text-gray-900'>
+                  Featured Products
+                </Text>
+                <TouchableOpacity>
+                  <Text className='text-blue-600'>See all</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </>
+        }
+        renderItem={({ item }) => (
+          <Link href={`/products/${item.id}`} asChild>
+            <TouchableOpacity className='mx-4 my-2 bg-white rounded-xl p-4 shadow-sm'>
+              <View className='flex-row'>
+                <Image
+                  source={{ uri: item.imageUrl }}
+                  className='w-24 h-24 rounded-lg'
+                  resizeMode='contain'
+                />
+                <View className='ml-4 flex-1'>
+                  <Text className='font-bold text-gray-900' numberOfLines={2}>
+                    {item.title}
+                  </Text>
+                  <Text
+                    className='text-sm text-gray-500 mt-1'
+                    numberOfLines={2}
+                  >
+                    {item.description}
+                  </Text>
+
+                  <View className='flex-row items-center mt-2'>
+                    <View className='bg-yellow-100 px-2 py-1 rounded'>
+                      <Text className='text-yellow-800 text-xs font-bold'>
+                        4.8 ★
+                      </Text>
+                    </View>
+                    <Text className='text-gray-500 text-xs ml-2'>
+                      (1.2k reviews)
+                    </Text>
+                  </View>
+
+                  <View className='mt-3 flex-row justify-between items-center'>
+                    <View>
+                      <Text className='font-bold text-lg text-gray-900'>
+                        ${(Math.random() * 100).toFixed(2)}
+                      </Text>
+                      {Math.random() > 0.5 && (
+                        <Text className='text-sm text-gray-400 line-through'>
+                          ${(Math.random() * 150).toFixed(2)}
+                        </Text>
+                      )}
+                    </View>
+                    <TouchableOpacity className='bg-blue-600 p-2 rounded-full'>
+                      <Feather name='shopping-cart' size={18} color='white' />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </TouchableOpacity>
+          </Link>
         )}
-        contentContainerStyle={{ paddingTop: 112 }}
+        ListFooterComponent={<View className='h-20' />}
       />
-    </>
+    </SafeAreaView>
   );
 }
