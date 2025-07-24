@@ -39,6 +39,7 @@ const Layout = () => {
       <Tabs.Screen
         name='more'
         options={{
+          headerTitleStyle: { color: 'white' },
           tabBarIcon: ({ color, size }) => (
             <Ionicons name='menu-outline' color={color} size={size} />
           ),
