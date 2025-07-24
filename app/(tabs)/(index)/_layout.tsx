@@ -7,7 +7,7 @@ const Layout = () => {
       headerClassName='bg-dark text-white'
       contentClassName='bg-gray-100 dark:bg-dark'
     >
-      <Stack.Screen name='index' options={{ title: '' }} />
+      <Stack.Screen name='index' options={{ title: 'home' }} />
     </StyledStack>
   );
 };

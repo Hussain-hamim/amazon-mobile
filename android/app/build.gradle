@@ -45,14 +45,15 @@ android {
 
 // Resolve missing AARs by substituting broken library with working fork
 configurations.all {
-    resolutionStrategy.dependencySubstitution {
-        substitute module("com.github.jiangdongguo.AndroidUSBCamera:libausbc")
-            using module("com.github.chenyeju295.AndroidUSBCamera:libausbc:3.3.6")
-    }
+  resolutionStrategy.dependencySubstitution {
+    substitute module("com.github.jiangdongguo.AndroidUSBCamera:libausbc:3.3.3")
+      using module("com.github.chenyeju295.AndroidUSBCamera:libausbc:3.3.6")
+  }
 }
 
+
 dependencies {
-    implementation "com.facebook.react:react-android"
+  implementation "com.github.chenyeju295.AndroidUSBCamera:libausbc:3.3.6"
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true"
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true"

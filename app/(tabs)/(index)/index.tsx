@@ -1,10 +1,9 @@
-import { Feather, Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Animated,
   Dimensions,
   FlatList,
   Image,
@@ -13,11 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import { useSharedValue } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -100,20 +95,6 @@ export default function HomeScreen() {
     setActiveBanner(index);
   };
 
-  const headerStyle = useAnimatedStyle(() => {
-    return {
-      height: withSpring(scrollY.value > 10 ? 70 : 120),
-      paddingTop: withSpring(scrollY.value > 10 ? 10 : 40),
-    };
-  });
-
-  const searchStyle = useAnimatedStyle(() => {
-    return {
-      opacity: withSpring(scrollY.value > 50 ? 0 : 1),
-      transform: [{ translateY: withSpring(scrollY.value > 50 ? -20 : 0) }],
-    };
-  });
-
   if (isLoading) {
     return (
       <SafeAreaView className='flex-1 items-center justify-center bg-gray-50'>
@@ -126,20 +107,6 @@ export default function HomeScreen() {
   return (
     <SafeAreaView className='flex-1 bg-gray-50'>
       <StatusBar style='light' />
-
-      {/* Animated Header */}
-      <Animated.View
-        className='w-full bg-white px-4 shadow-sm z-50 pb-4'
-        style={headerStyle}
-      >
-        <Animated.View style={searchStyle}>
-          <TouchableOpacity className='mt-3 flex-row items-center bg-gray-100 rounded-full px-4 py-3'>
-            <Ionicons name='search' size={18} color='#6B7280' />
-            <Text className='ml-2 text-gray-500'>Search for products...</Text>
-          </TouchableOpacity>
-        </Animated.View>
-      </Animated.View>
-
       <FlatList
         data={products}
         keyExtractor={(item) => item.id.toString()}
