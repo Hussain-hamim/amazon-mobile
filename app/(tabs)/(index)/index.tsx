@@ -69,6 +69,8 @@ export default function HomeScreen() {
   const [activeBanner, setActiveBanner] = useState(0);
   const scrollY = useSharedValue(0);
 
+  // console.log(' hello', products[0].imageUrl);
+
   const fetchProducts = async () => {
     try {
       const url = 'https://e206fbebdde0.ngrok-free.app/articles';
@@ -123,7 +125,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView className='flex-1 bg-gray-50'>
-      <StatusBar style='dark' />
+      <StatusBar style='light' />
 
       {/* Animated Header */}
       <Animated.View
