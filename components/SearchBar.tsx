@@ -1,7 +1,7 @@
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { TextInput, TouchableOpacity, View } from 'react-native';
-// import { useMMKVBoolean } from 'react-native-mmkv';
+import { useMMKVBoolean } from 'react-native-mmkv';
 import Animated from 'react-native-reanimated';
 
 const AnimatedTouchableOpacity =
@@ -11,14 +11,14 @@ interface SearchBarProps {
 }
 const SearchBar = ({ withBackButton = false }: SearchBarProps) => {
   const router = useRouter();
-  // const [showOverlay, setShowOverlay] = useMMKVBoolean('vapi.overlay');
+  const [showOverlay, setShowOverlay] = useMMKVBoolean('vapi.overlay');
 
   const onBackPress = () => {
-    // if (showOverlay) {
-    //   setShowOverlay(false);
-    // } else {
-    //   router.back();
-    // }
+    if (showOverlay) {
+      setShowOverlay(false);
+    } else {
+      router.back();
+    }
   };
 
   return (
@@ -38,7 +38,10 @@ const SearchBar = ({ withBackButton = false }: SearchBarProps) => {
         <TouchableOpacity className='px-3 border-gray-300 h-full justify-center'>
           <MaterialIcons name='photo-camera' size={20} color='#666' />
         </TouchableOpacity>
-        <TouchableOpacity className='ml-3 mr-3'>
+        <TouchableOpacity
+          className='ml-3 mr-3'
+          onPress={() => setShowOverlay(!showOverlay)}
+        >
           <MaterialIcons name='mic' size={24} color='black' />
         </TouchableOpacity>
       </View>
