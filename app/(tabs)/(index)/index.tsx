@@ -175,7 +175,7 @@ export default function HomeScreen() {
     const translateY = Math.min(scrollY.value, menuHeight.value);
     return {
       transform: [{ translateY: -translateY }],
-      opacity: withTiming(scrollY.value > 10 ? 0 : 1, { duration: 200 }),
+      opacity: withTiming(scrollY.value > 10 ? 0 : 1, { duration: 300 }),
     };
   });
 
@@ -188,22 +188,27 @@ export default function HomeScreen() {
     return {
       transform: [{ translateY: -translateY }],
       opacity: withTiming(scrollY.value > menuHeight.value + 10 ? 0 : 1, {
-        duration: 200,
+        duration: 300,
       }),
     };
   });
 
-  // Content padding animation
-  const contentOffsetStyle = useAnimatedStyle(() => {
-    return {
-      paddingTop: withTiming(
-        scrollY.value > headerHeight.value
-          ? 0
-          : headerHeight.value - scrollY.value,
-        { duration: 200 }
-      ),
-    };
-  });
+  // const scrollValue = useSharedValue(0);
+  // const scrollHandler2 = useAnimatedScrollHandler({
+  //   onScroll: (event) => {
+  //     console.log(event.contentOffset.y);
+
+  //     if (event.contentOffset.y > 50) {
+  //       scrollValue.value = 50 - event.contentOffset.y;
+  //     }
+  //   },
+  // });
+
+  // const scrollStyle = useAnimatedStyle(() => {
+  //   return {
+  //     transform: [{ translateY: scrollValue.value }],
+  //   };
+  // });
 
   const getItemLayout = (data: any, index: number) => ({
     length: SCREEN_WIDTH,
@@ -245,7 +250,7 @@ export default function HomeScreen() {
 
       {/* SEARCH BAR - VISUALLY ON TOP */}
       <Animated.View
-        className='bg-[#131921] z-30 px-3 py-2 absolute top-0 left-0 right-0'
+        className='bg-[#232f3e] z-30 px-3 py-2 absolute top-0 left-0 right-0'
         style={[searchBarStyle, { height: searchBarHeight.value }]}
       >
         <View className='flex-1 flex-row items-center bg-white rounded-md h-12'>
