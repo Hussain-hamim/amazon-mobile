@@ -59,13 +59,6 @@ const heroBanners = [
     image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0',
     color: '#FF6F61',
   },
-  {
-    id: '6',
-    title: 'Sports Gear',
-    subtitle: 'Get fit',
-    image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0',
-    color: '#6A0572',
-  },
 ];
 
 const categories = [
@@ -92,7 +85,7 @@ export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [activeBanner, setActiveBanner] = useState(0);
   const bannerScrollRef = useRef<FlatList>(null);
-  const scrollInterval = useRef<NodeJS.Timeout>();
+  const scrollInterval = useRef<NodeJS.Timeout>(null);
 
   // Animation values
   const scrollY = useSharedValue(0);
@@ -100,9 +93,15 @@ export default function HomeScreen() {
   const searchBarHeight = useSharedValue(60); // Search bar height
   const menuHeight = useSharedValue(50); // Menu bar height
 
+  // const { data } = useQuery({
+  //   queryKey: ['articles'],
+  //   queryFn: getArticles,
+  // });
+
   const fetchProducts = async () => {
     try {
-      const url = 'https://e206fbebdde0.ngrok-free.app/articles';
+      const url = 'http://192.168.29.143:3000/articles';
+      // const url = `${process.env.EXPO_PUBLIC_API_URL}/articles`;
       const response = await fetch(url);
       const data = await response.json();
       setProducts(data);

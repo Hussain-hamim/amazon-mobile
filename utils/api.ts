@@ -1,5 +1,4 @@
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
-// const API_URL = 'http://localhost:3000';
 
 export interface Article {
   id: number;
@@ -27,10 +26,8 @@ interface Item {
   article: Article;
 }
 
-const url = 'https://e206fbebdde0.ngrok-free.app/articles';
-
 export const getArticles = async (): Promise<Article[]> => {
-  const response = await fetch(url);
+  const response = await fetch(`${API_URL}/articles`);
   return response.json();
 };
 
