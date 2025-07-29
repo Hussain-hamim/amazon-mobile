@@ -1,4 +1,6 @@
-import { Feather, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import VapiOverlay from '@/components/VapiOverlay';
+import { useOverlay } from '@/hooks/useOverlay';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useRef, useState } from 'react';
@@ -9,7 +11,6 @@ import {
   Image,
   RefreshControl,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -86,6 +87,8 @@ export default function HomeScreen() {
   const [activeBanner, setActiveBanner] = useState(0);
   const bannerScrollRef = useRef<FlatList>(null);
   const scrollInterval = useRef<NodeJS.Timeout>(null);
+
+  const { showOverlay, setShowOverlay } = useOverlay();
 
   // Animation values
   const scrollY = useSharedValue(0);
@@ -174,7 +177,7 @@ export default function HomeScreen() {
     const translateY = Math.min(scrollY.value, menuHeight.value);
     return {
       transform: [{ translateY: -translateY }],
-      opacity: withTiming(scrollY.value > 10 ? 0 : 1, { duration: 300 }),
+      // opacity: withTiming(scrollY.value > 10 ? 0 : 1, { duration: 300 }),
     };
   });
 
@@ -247,8 +250,10 @@ export default function HomeScreen() {
     <SafeAreaView edges={['bottom']} className='flex-1 bg-gray-50'>
       <StatusBar style='light' />
 
+      {showOverlay && <VapiOverlay />}
+
       {/* SEARCH BAR - VISUALLY ON TOP */}
-      <Animated.View
+      {/* <Animated.View
         className='bg-[#232f3e] z-30 px-3 py-2 absolute top-0 left-0 right-0'
         style={[searchBarStyle, { height: searchBarHeight.value }]}
       >
@@ -264,50 +269,45 @@ export default function HomeScreen() {
           <TouchableOpacity className='px-3 border-gray-300 h-full justify-center'>
             <MaterialIcons name='photo-camera' size={20} color='#666' />
           </TouchableOpacity>
-          <TouchableOpacity className='ml-3 mr-3'>
+          <TouchableOpacity
+            className='ml-3 mr-3'
+            onPress={(ev) => setShowOverlay(true)}
+          >
             <MaterialIcons name='mic' size={24} color='black' />
           </TouchableOpacity>
         </View>
-      </Animated.View>
+      </Animated.View> */}
 
       {/* MENU BAR - BELOW SEARCH */}
-      <Animated.View
-        className='w-full bg-[#232f3e] z-20 absolute left-0 right-0'
-        style={[
-          menuStyle,
-          {
-            top: searchBarHeight.value, // Position below search bar
-            height: menuHeight.value,
-          },
-        ]}
+
+      <Animated.ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        className='w-full top-[111px] bg-[#232f3e]  absolute left-0 right-0'
+        style={menuStyle}
+        contentContainerStyle={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingHorizontal: 16,
+          paddingVertical: 12,
+          gap: 24,
+        }}
       >
-        <Animated.ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: 16,
-            paddingVertical: 12,
-            gap: 24,
-          }}
-        >
-          <View className='flex-row items-center'>
-            <Ionicons name='location-outline' size={20} color='white' />
-            <Text className='text-white text-lg font-bold ml-1'>48163</Text>
-          </View>
-          {['Alexa Lists', 'Prime', 'Video', 'Books', 'PC', 'Musik'].map(
-            (item) => (
-              <TouchableOpacity key={item}>
-                <Text className='text-white text-md font-semibold'>{item}</Text>
-              </TouchableOpacity>
-            )
-          )}
-        </Animated.ScrollView>
-      </Animated.View>
+        <View className='flex-row items-center'>
+          <Ionicons name='location-outline' size={20} color='white' />
+          <Text className='text-white text-lg font-bold ml-1'>48163</Text>
+        </View>
+        {['Alexa Lists', 'Prime', 'Video', 'Books', 'PC', 'Musik'].map(
+          (item) => (
+            <TouchableOpacity key={item}>
+              <Text className='text-white text-md font-semibold'>{item}</Text>
+            </TouchableOpacity>
+          )
+        )}
+      </Animated.ScrollView>
 
       {/* MAIN CONTENT */}
-      <AnimatedFlatList
+      <Animated.FlatList
         data={products}
         keyExtractor={(item) => item.id.toString()}
         refreshControl={
@@ -315,7 +315,8 @@ export default function HomeScreen() {
         }
         onScroll={scrollHandler}
         scrollEventThrottle={16}
-        contentContainerStyle={{ paddingTop: headerHeight.value }}
+        // contentContainerStyle={{ paddingTop: headerHeight.value }}
+        contentContainerStyle={{ paddingTop: 155 }}
         ListHeaderComponent={
           <>
             {/* Hero Banners */}

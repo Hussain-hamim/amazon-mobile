@@ -3,58 +3,17 @@ import {
   Alert,
   Button,
   FlatList,
-  RefreshControl,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 
-////////////////
-
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Stack } from 'expo-router';
 
-function Feed() {
-  const [data, setData] = useState([]);
-  const [refreshing, setRefreshing] = useState(false);
-
-  const fetchPosts = async () => {
-    const res = await fetch('https://jsonplaceholder.typicode.com/users');
-    const jsonData = await res.json();
-
-    setData(jsonData);
-  };
-
-  useEffect(() => {
-    fetchPosts();
-  }, []);
-
-  return (
-    <FlatList
-      data={data}
-      renderItem={({ item }) => (
-        <Text className='text-lg font-semibold border-b border-gray-200 p-4'>
-          {item.name} - {item.email}
-        </Text>
-      )}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={() => {
-            setRefreshing(true);
-            fetchPosts().then(() => setRefreshing(false));
-          }}
-        />
-      }
-    />
-  );
-}
-
-//////////////////////////
-
-export default function Todo() {
+function Todo() {
   const [task, setTask] = useState('');
   const [list, setList] = useState<
     {
@@ -174,13 +133,16 @@ export default function Todo() {
   );
 }
 
-////////////////////
+///////////////////////////////////
 
-function Cart() {
+export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
+    if (!email.includes('@')) return alert('Invalid email');
+    if (password.length < 6) return alert('Too short');
+
     Alert.alert('Logged In!', `welcome ${email}`);
   };
 

@@ -1,5 +1,6 @@
 import { StyledStack } from '@/components/navigation/stack';
 import '@/global.css';
+import { OverlayProvider } from '@/hooks/useOverlay';
 import { ClerkLoaded, ClerkProvider } from '@clerk/clerk-expo';
 import { tokenCache } from '@clerk/clerk-expo/token-cache';
 import { passkeys } from '@clerk/expo-passkeys';
@@ -80,15 +81,17 @@ export default function RootLayout() {
       tokenCache={tokenCache}
       __experimental_passkeys={passkeys}
     >
-      <QueryClientProvider client={queryClient}>
-        <ClerkLoaded>
-          <ThemeProvider
-            value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-          >
-            <InitialLayout />
-          </ThemeProvider>
-        </ClerkLoaded>
-      </QueryClientProvider>
+      <OverlayProvider>
+        <QueryClientProvider client={queryClient}>
+          <ClerkLoaded>
+            <ThemeProvider
+              value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+            >
+              <InitialLayout />
+            </ThemeProvider>
+          </ClerkLoaded>
+        </QueryClientProvider>
+      </OverlayProvider>
     </ClerkProvider>
   );
 }
