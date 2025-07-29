@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Stack } from 'expo-router';
 
-function Todo() {
+export default function Todo() {
   const [task, setTask] = useState('');
   const [list, setList] = useState<
     {
@@ -135,7 +135,7 @@ function Todo() {
 
 ///////////////////////////////////
 
-export default function Login() {
+function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 

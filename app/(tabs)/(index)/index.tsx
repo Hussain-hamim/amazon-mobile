@@ -24,62 +24,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const heroBanners = [
-  {
-    id: '1',
-    title: 'Summer Collection',
-    subtitle: 'Up to 50% off',
-    image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b',
-    color: '#FF6B6B',
-  },
-  {
-    id: '2',
-    title: 'Tech Gadgets',
-    subtitle: 'New arrivals',
-    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475',
-    color: '#4ECDC4',
-  },
-  {
-    id: '3',
-    title: 'Home Essentials',
-    subtitle: 'Limited time offer',
-    image: 'https://images.unsplash.com/photo-1556911220-bff31c812dba',
-    color: '#FFBE0B',
-  },
-  {
-    id: '4',
-    title: 'Fashion Trends',
-    subtitle: 'Shop now',
-    image: 'https://images.unsplash.com/photo-1521747116042-5a810fda9664',
-    color: '#F7B7A3',
-  },
-  {
-    id: '5',
-    title: 'Beauty Products',
-    subtitle: 'Best deals',
-    image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0',
-    color: '#FF6F61',
-  },
-];
-
-const categories = [
-  { id: '1', name: 'Electronics', icon: 'smartphone' },
-  { id: '2', name: 'Fashion', icon: 'shopping-bag' },
-  { id: '3', name: 'Home', icon: 'home' },
-  { id: '4', name: 'Beauty', icon: 'smile' },
-  { id: '5', name: 'Sports', icon: 'dribbble' },
-  { id: '6', name: 'Books', icon: 'book' },
-];
-
-const deals = [
-  { id: '1', name: 'Flash Sale', icon: 'zap' },
-  { id: '2', name: 'Top Deals', icon: 'tag' },
-  { id: '3', name: 'New Arrivals', icon: 'star' },
-  { id: '4', name: 'Best Sellers', icon: 'award' },
-];
-
-const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
-
 export default function HomeScreen() {
   const [products, setProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -92,8 +36,6 @@ export default function HomeScreen() {
 
   // Animation values
   const scrollY = useSharedValue(0);
-  const headerHeight = useSharedValue(110); // Total height of both headers
-  const searchBarHeight = useSharedValue(60); // Search bar height
   const menuHeight = useSharedValue(50); // Menu bar height
 
   // const { data } = useQuery({
@@ -177,40 +119,9 @@ export default function HomeScreen() {
     const translateY = Math.min(scrollY.value, menuHeight.value);
     return {
       transform: [{ translateY: -translateY }],
-      // opacity: withTiming(scrollY.value > 10 ? 0 : 1, { duration: 300 }),
+      opacity: withTiming(scrollY.value > 10 ? 0 : 1, { duration: 400 }),
     };
   });
-
-  // Search bar animation (disappears second)
-  const searchBarStyle = useAnimatedStyle(() => {
-    const translateY = Math.max(
-      0,
-      Math.min(scrollY.value - menuHeight.value, searchBarHeight.value)
-    );
-    return {
-      transform: [{ translateY: -translateY }],
-      opacity: withTiming(scrollY.value > menuHeight.value + 10 ? 0 : 1, {
-        duration: 300,
-      }),
-    };
-  });
-
-  // const scrollValue = useSharedValue(0);
-  // const scrollHandler2 = useAnimatedScrollHandler({
-  //   onScroll: (event) => {
-  //     console.log(event.contentOffset.y);
-
-  //     if (event.contentOffset.y > 50) {
-  //       scrollValue.value = 50 - event.contentOffset.y;
-  //     }
-  //   },
-  // });
-
-  // const scrollStyle = useAnimatedStyle(() => {
-  //   return {
-  //     transform: [{ translateY: scrollValue.value }],
-  //   };
-  // });
 
   const getItemLayout = (data: any, index: number) => ({
     length: SCREEN_WIDTH,
@@ -251,34 +162,6 @@ export default function HomeScreen() {
       <StatusBar style='light' />
 
       {showOverlay && <VapiOverlay />}
-
-      {/* SEARCH BAR - VISUALLY ON TOP */}
-      {/* <Animated.View
-        className='bg-[#232f3e] z-30 px-3 py-2 absolute top-0 left-0 right-0'
-        style={[searchBarStyle, { height: searchBarHeight.value }]}
-      >
-        <View className='flex-1 flex-row items-center bg-white rounded-md h-12'>
-          <View className='px-2 flex-row flex-1 items-center'>
-            <Ionicons name='search' size={18} color='#666' className='ml-1' />
-            <TextInput
-              placeholder='Search Amazon'
-              className='flex-1 ml-2 text-base'
-              placeholderTextColor='#666'
-            />
-          </View>
-          <TouchableOpacity className='px-3 border-gray-300 h-full justify-center'>
-            <MaterialIcons name='photo-camera' size={20} color='#666' />
-          </TouchableOpacity>
-          <TouchableOpacity
-            className='ml-3 mr-3'
-            onPress={(ev) => setShowOverlay(true)}
-          >
-            <MaterialIcons name='mic' size={24} color='black' />
-          </TouchableOpacity>
-        </View>
-      </Animated.View> */}
-
-      {/* MENU BAR - BELOW SEARCH */}
 
       <Animated.ScrollView
         horizontal
@@ -475,3 +358,57 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
+
+const heroBanners = [
+  {
+    id: '1',
+    title: 'Summer Collection',
+    subtitle: 'Up to 50% off',
+    image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b',
+    color: '#FF6B6B',
+  },
+  {
+    id: '2',
+    title: 'Tech Gadgets',
+    subtitle: 'New arrivals',
+    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475',
+    color: '#4ECDC4',
+  },
+  {
+    id: '3',
+    title: 'Home Essentials',
+    subtitle: 'Limited time offer',
+    image: 'https://images.unsplash.com/photo-1556911220-bff31c812dba',
+    color: '#FFBE0B',
+  },
+  {
+    id: '4',
+    title: 'Fashion Trends',
+    subtitle: 'Shop now',
+    image: 'https://images.unsplash.com/photo-1521747116042-5a810fda9664',
+    color: '#F7B7A3',
+  },
+  {
+    id: '5',
+    title: 'Beauty Products',
+    subtitle: 'Best deals',
+    image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0',
+    color: '#FF6F61',
+  },
+];
+
+const categories = [
+  { id: '1', name: 'Electronics', icon: 'smartphone' },
+  { id: '2', name: 'Fashion', icon: 'shopping-bag' },
+  { id: '3', name: 'Home', icon: 'home' },
+  { id: '4', name: 'Beauty', icon: 'smile' },
+  { id: '5', name: 'Sports', icon: 'dribbble' },
+  { id: '6', name: 'Books', icon: 'book' },
+];
+
+const deals = [
+  { id: '1', name: 'Flash Sale', icon: 'zap' },
+  { id: '2', name: 'Top Deals', icon: 'tag' },
+  { id: '3', name: 'New Arrivals', icon: 'star' },
+  { id: '4', name: 'Best Sellers', icon: 'award' },
+];
