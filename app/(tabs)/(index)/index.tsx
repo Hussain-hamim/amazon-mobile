@@ -1,6 +1,8 @@
 import VapiOverlay from '@/components/VapiOverlay';
 import { useOverlay } from '@/hooks/useOverlay';
+import { getArticles } from '@/utils/api';
 import { Feather, Ionicons } from '@expo/vector-icons';
+import { useQuery } from '@tanstack/react-query';
 import { Link } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useRef, useState } from 'react';
@@ -25,8 +27,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function HomeScreen() {
-  const [products, setProducts] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [activeBanner, setActiveBanner] = useState(0);
   const bannerScrollRef = useRef<FlatList>(null);
@@ -38,28 +38,18 @@ export default function HomeScreen() {
   const scrollY = useSharedValue(0);
   const menuHeight = useSharedValue(50); // Menu bar height
 
-  // const { data } = useQuery({
-  //   queryKey: ['articles'],
-  //   queryFn: getArticles,
-  // });
-
-  const fetchProducts = async () => {
-    try {
-      const url = 'http://192.168.29.143:3000/articles';
-      // const url = `${process.env.EXPO_PUBLIC_API_URL}/articles`;
-      const response = await fetch(url);
-      const data = await response.json();
-      setProducts(data);
-    } catch (error) {
-      console.error('Fetch error:', error);
-    } finally {
-      setIsLoading(false);
-      setRefreshing(false);
-    }
-  };
+  const {
+    data: products,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ['articles'],
+    queryFn: () => getArticles(),
+  });
 
   useEffect(() => {
-    fetchProducts();
+    // fetchProducts();
 
     // Auto-scroll banner every 4 seconds
     const startAutoScroll = () => {
@@ -84,7 +74,7 @@ export default function HomeScreen() {
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchProducts();
+    // fetchProducts();
   };
 
   const handleBannerScroll = (event: any) => {
@@ -267,7 +257,7 @@ export default function HomeScreen() {
             </View>
 
             {/* Deals */}
-            <View className='px-4 py-2'>
+            {/* <View className='px-4 py-2'>
               <Text className='text-xl font-bold text-gray-900 mb-4'>
                 Hot Deals
               </Text>
@@ -288,7 +278,7 @@ export default function HomeScreen() {
                   </TouchableOpacity>
                 ))}
               </View>
-            </View>
+            </View> */}
 
             {/* Products Header */}
             <View className='px-4 py-2'>

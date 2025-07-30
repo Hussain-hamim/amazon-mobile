@@ -1,9 +1,6 @@
 import { StyledStack } from '@/components/navigation/stack';
 import '@/global.css';
 import { OverlayProvider } from '@/hooks/useOverlay';
-import { ClerkLoaded, ClerkProvider } from '@clerk/clerk-expo';
-import { tokenCache } from '@clerk/clerk-expo/token-cache';
-import { passkeys } from '@clerk/expo-passkeys';
 import { Ionicons } from '@expo/vector-icons';
 import {
   DarkTheme,
@@ -13,6 +10,7 @@ import {
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack, useRouter } from 'expo-router';
 import { LogBox, TouchableOpacity, useColorScheme } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 if (!publishableKey) {
@@ -76,22 +74,24 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <ClerkProvider
-      publishableKey={publishableKey}
-      tokenCache={tokenCache}
-      __experimental_passkeys={passkeys}
-    >
-      <OverlayProvider>
-        <QueryClientProvider client={queryClient}>
-          <ClerkLoaded>
-            <ThemeProvider
-              value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-            >
-              <InitialLayout />
-            </ThemeProvider>
-          </ClerkLoaded>
-        </QueryClientProvider>
-      </OverlayProvider>
-    </ClerkProvider>
+    // <ClerkProvider
+    //   publishableKey={publishableKey}
+    //   tokenCache={tokenCache}
+    //   __experimental_passkeys={passkeys}
+    // >
+    <OverlayProvider>
+      {/* <ClerkLoaded> */}
+      <QueryClientProvider client={queryClient}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <ThemeProvider
+            value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+          >
+            <InitialLayout />
+          </ThemeProvider>
+        </GestureHandlerRootView>
+      </QueryClientProvider>
+    </OverlayProvider>
+    // {/* </ClerkLoaded> */}
+    // </ClerkProvider>
   );
 }
