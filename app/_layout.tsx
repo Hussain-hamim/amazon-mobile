@@ -40,7 +40,7 @@ const InitialLayout = () => {
       <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
       <Stack.Screen
         name='signin'
-        options={{ title: 'Amazon', presentation: 'fullScreenModal' }}
+        options={{ title: 'Login', presentation: 'fullScreenModal' }}
       />
 
       <Stack.Screen
@@ -53,7 +53,12 @@ const InitialLayout = () => {
           },
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.dismiss()}>
-              <Ionicons name='close' size={24} className='text-gray-400' />
+              <Ionicons
+                name='close'
+                size={24}
+                className='text-gray-800'
+                color={'black'}
+              />
             </TouchableOpacity>
           ),
           presentation: 'formSheet',

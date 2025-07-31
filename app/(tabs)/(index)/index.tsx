@@ -28,11 +28,12 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
+
   const [activeBanner, setActiveBanner] = useState(0);
   const bannerScrollRef = useRef<FlatList>(null);
   const scrollInterval = useRef<NodeJS.Timeout>(null);
 
-  const { showOverlay, setShowOverlay } = useOverlay();
+  const { showOverlay } = useOverlay();
 
   // Animation values
   const scrollY = useSharedValue(0);
@@ -48,11 +49,15 @@ export default function HomeScreen() {
     queryFn: () => getArticles(),
   });
 
-  useEffect(() => {
-    // fetchProducts();
+  const onRefresh = () => {
+    setRefreshing(true);
+  };
 
+  // Banner style and animation
+  useEffect(() => {
     // Auto-scroll banner every 4 seconds
     const startAutoScroll = () => {
+      //@ts-ignore
       scrollInterval.current = setInterval(() => {
         setActiveBanner((prev) => {
           const nextIndex = (prev + 1) % heroBanners.length;
@@ -72,13 +77,10 @@ export default function HomeScreen() {
     };
   }, []);
 
-  const onRefresh = () => {
-    setRefreshing(true);
-    // fetchProducts();
-  };
-
   const handleBannerScroll = (event: any) => {
     const contentOffset = event.nativeEvent.contentOffset.x;
+    // console.log(contentOffset); // first=411 second=822 ...
+    // console.log(SCREEN_WIDTH); // 411
     const index = Math.round(contentOffset / SCREEN_WIDTH);
     setActiveBanner(index);
 
@@ -86,6 +88,7 @@ export default function HomeScreen() {
     if (scrollInterval.current) {
       clearInterval(scrollInterval.current);
     }
+    //@ts-ignore
     scrollInterval.current = setInterval(() => {
       setActiveBanner((prev) => {
         const nextIndex = (prev + 1) % heroBanners.length;
@@ -98,13 +101,19 @@ export default function HomeScreen() {
     }, 4000);
   };
 
+  const getItemLayout = (data: any, index: number) => ({
+    length: SCREEN_WIDTH,
+    offset: SCREEN_WIDTH * index,
+    index,
+  });
+
+  // Top menu style and animation
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
       scrollY.value = event.contentOffset.y;
     },
   });
 
-  // Menu bar animation (disappears first)
   const menuStyle = useAnimatedStyle(() => {
     const translateY = Math.min(scrollY.value, menuHeight.value);
     return {
@@ -113,37 +122,23 @@ export default function HomeScreen() {
     };
   });
 
-  const getItemLayout = (data: any, index: number) => ({
-    length: SCREEN_WIDTH,
-    offset: SCREEN_WIDTH * index,
-    index,
-  });
+  // if (isLoading) {
+  //   return (
+  //     <SafeAreaView className='flex-1 items-center justify-center bg-gray-50'>
+  //       <ActivityIndicator size='large' color='#3B82F6' />
+  //       <Text className='mt-4 text-lg text-gray-600'>Loading products...</Text>
+  //     </SafeAreaView>
+  //   );
+  // }
 
-  const handleScrollToIndexFailed = (info: {
-    index: number;
-    highestMeasuredIndex: number;
-    averageItemLength: number;
-  }) => {
-    bannerScrollRef.current?.scrollToOffset({
-      offset: info.averageItemLength * info.index,
-      animated: true,
-    });
-    setTimeout(() => {
-      if (bannerScrollRef.current) {
-        bannerScrollRef.current.scrollToIndex({
-          index: info.index,
-          animated: true,
-        });
-      }
-    }, 100);
-  };
-
-  if (isLoading) {
+  if (isError) {
     return (
-      <SafeAreaView className='flex-1 items-center justify-center bg-gray-50'>
-        <ActivityIndicator size='large' color='#3B82F6' />
-        <Text className='mt-4 text-lg text-gray-600'>Loading products...</Text>
-      </SafeAreaView>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>
+          Error loading articles:{' '}
+          {error instanceof Error ? error.message : 'Unknown error'}
+        </Text>
+      </View>
     );
   }
 
@@ -153,6 +148,7 @@ export default function HomeScreen() {
 
       {showOverlay && <VapiOverlay />}
 
+      {/* Top Menu */}
       <Animated.ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -168,15 +164,13 @@ export default function HomeScreen() {
       >
         <View className='flex-row items-center'>
           <Ionicons name='location-outline' size={20} color='white' />
-          <Text className='text-white text-lg font-bold ml-1'>48163</Text>
+          <Text className='text-white text-lg font-bold ml-1'>h1s2n3</Text>
         </View>
-        {['Alexa Lists', 'Prime', 'Video', 'Books', 'PC', 'Musik'].map(
-          (item) => (
-            <TouchableOpacity key={item}>
-              <Text className='text-white text-md font-semibold'>{item}</Text>
-            </TouchableOpacity>
-          )
-        )}
+        {['Alexa Lists', 'Prime', 'Video', 'Books', 'Musik'].map((item) => (
+          <TouchableOpacity key={item}>
+            <Text className='text-white text-md font-semibold'>{item}</Text>
+          </TouchableOpacity>
+        ))}
       </Animated.ScrollView>
 
       {/* MAIN CONTENT */}
@@ -188,12 +182,11 @@ export default function HomeScreen() {
         }
         onScroll={scrollHandler}
         scrollEventThrottle={16}
-        // contentContainerStyle={{ paddingTop: headerHeight.value }}
         contentContainerStyle={{ paddingTop: 155 }}
         ListHeaderComponent={
           <>
             {/* Hero Banners */}
-            <View className='h-64 mt-2'>
+            <View className='h-64'>
               <FlatList
                 ref={bannerScrollRef}
                 horizontal
@@ -208,7 +201,7 @@ export default function HomeScreen() {
                       className='w-full h-full'
                       resizeMode='cover'
                     />
-                    <View className='absolute bottom-0 left-0 right-0 p-6 bg-black/30'>
+                    <View className='absolute bottom-0 left-0 right-0 p-4 bg-black/30'>
                       <Text className='text-white text-2xl font-bold'>
                         {item.title}
                       </Text>
@@ -219,7 +212,6 @@ export default function HomeScreen() {
                   </View>
                 )}
                 getItemLayout={getItemLayout}
-                onScrollToIndexFailed={handleScrollToIndexFailed}
                 onScroll={handleBannerScroll}
                 initialScrollIndex={activeBanner}
               />
@@ -246,6 +238,7 @@ export default function HomeScreen() {
                 renderItem={({ item }) => (
                   <TouchableOpacity className='items-center mx-2'>
                     <View className='bg-blue-50 p-4 rounded-full'>
+                      {/* @ts-ignore */}
                       <Feather name={item.icon} size={24} color='#3B82F6' />
                     </View>
                     <Text className='mt-2 text-sm text-gray-700'>
@@ -255,30 +248,6 @@ export default function HomeScreen() {
                 )}
               />
             </View>
-
-            {/* Deals */}
-            {/* <View className='px-4 py-2'>
-              <Text className='text-xl font-bold text-gray-900 mb-4'>
-                Hot Deals
-              </Text>
-              <View className='flex-row flex-wrap justify-between'>
-                {deals.map((deal) => (
-                  <TouchableOpacity
-                    key={deal.id}
-                    className='w-[48%] bg-white rounded-lg p-4 mb-4 shadow-sm'
-                  >
-                    <View className='flex-row items-center'>
-                      <View className='bg-blue-100 p-2 rounded-full'>
-                        <Feather name={deal.icon} size={20} color='#3B82F6' />
-                      </View>
-                      <Text className='ml-3 font-medium text-gray-800'>
-                        {deal.name}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View> */}
 
             {/* Products Header */}
             <View className='px-4 py-2'>
@@ -293,57 +262,64 @@ export default function HomeScreen() {
             </View>
           </>
         }
-        renderItem={({ item }) => (
-          <Link href={`/(tabs)/${item.id}`} asChild>
-            <TouchableOpacity className='mx-4 my-2 bg-white rounded-xl p-4 shadow-sm'>
-              <View className='flex-row'>
-                <Image
-                  source={{
-                    // uri: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0',
-                    uri: item.imageUrl,
-                  }}
-                  className='w-24 h-24 rounded-lg'
-                  resizeMode='contain'
-                />
-                <View className='ml-4 flex-1'>
-                  <Text className='font-bold text-gray-900' numberOfLines={2}>
-                    {item.title}
-                  </Text>
-                  <Text
-                    className='text-sm text-gray-500 mt-1'
-                    numberOfLines={2}
-                  >
-                    {item.description}
-                  </Text>
-
-                  <View className='flex-row items-center mt-2'>
-                    <View className='bg-yellow-100 px-2 py-1 rounded'>
-                      <Text className='text-yellow-800 text-xs font-bold'>
-                        4.8 ★
-                      </Text>
-                    </View>
-                    <Text className='text-gray-500 text-xs ml-2'>
-                      (1.2k reviews)
+        renderItem={({ item }) =>
+          isLoading ? (
+            <View className='flex-1 items-center justify-center gap-6 pb-6 bg-gray-50 flex-row'>
+              <Text className='mt-4 text-lg text-gray-600'>
+                Loading products...
+              </Text>
+              <ActivityIndicator size='large' color='#3B82F6' />
+            </View>
+          ) : (
+            <Link href={`/(tabs)/${item.id}`} asChild>
+              <TouchableOpacity className='mx-4 my-2 bg-white rounded-xl p-4 shadow-sm'>
+                <View className='flex-row'>
+                  <Image
+                    source={{
+                      uri: item.imageUrl,
+                    }}
+                    className='w-24 h-24 rounded-lg'
+                    resizeMode='contain'
+                  />
+                  <View className='ml-4 flex-1'>
+                    <Text className='font-bold text-gray-900' numberOfLines={2}>
+                      {item.title}
                     </Text>
-                  </View>
+                    <Text
+                      className='text-sm text-gray-500 mt-1'
+                      numberOfLines={2}
+                    >
+                      {item.description}
+                    </Text>
 
-                  <View className='mt-3 flex-row justify-between items-center'>
-                    <View>
-                      <Text className='font-bold text-lg text-gray-900'>
-                        ${item.price}
+                    <View className='flex-row items-center mt-2'>
+                      <View className='bg-yellow-100 px-2 py-1 rounded'>
+                        <Text className='text-yellow-800 text-xs font-bold'>
+                          4.8 ★
+                        </Text>
+                      </View>
+                      <Text className='text-gray-500 text-xs ml-2'>
+                        (1.2k reviews)
                       </Text>
-                      {/* {Math.random() > 0.5 && ( */}
                     </View>
-                    <TouchableOpacity className='bg-blue-600 p-2 rounded-full'>
-                      <Feather name='shopping-cart' size={18} color='white' />
-                    </TouchableOpacity>
+
+                    <View className='mt-3 flex-row justify-between items-center'>
+                      <View>
+                        <Text className='font-bold text-lg text-gray-900'>
+                          ${item.price}
+                        </Text>
+                      </View>
+                      <TouchableOpacity className='bg-blue-600 p-2 rounded-full'>
+                        <Feather name='shopping-cart' size={18} color='white' />
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </View>
-              </View>
-            </TouchableOpacity>
-          </Link>
-        )}
-        ListFooterComponent={<View className='h-20' />}
+              </TouchableOpacity>
+            </Link>
+          )
+        }
+        ListFooterComponent={<View className='h-20 ' />}
       />
     </SafeAreaView>
   );
