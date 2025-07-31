@@ -23,6 +23,7 @@
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/elements": "^2.3.8",
     "@react-navigation/native": "^7.1.6",
+    "@stripe/stripe-react-native": "0.45.0",
     "@tanstack/react-query": "^5.83.0",
     "@types/node": "^24.1.0",
     "@vapi-ai/react-native": "^0.2.4",
@@ -48,6 +49,7 @@
     "react-hook-form": "^7.60.0",
     "react-native": "0.79.5",
     "react-native-background-timer": "^2.4.1",
+    "react-native-filament": "^1.8.0",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-get-random-values": "^1.11.0",
     "react-native-mmkv": "2",
@@ -56,7 +58,9 @@
     "react-native-screens": "~4.11.1",
     "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5",
-    "zod": "^4.0.5"
+    "react-native-worklets-core": "^1.6.0",
+    "zod": "^4.0.5",
+    "zustand": "^5.0.7"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
