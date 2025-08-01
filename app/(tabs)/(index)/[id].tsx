@@ -58,6 +58,11 @@ const DetailsPage = () => {
   const currentPosition = useSharedValue(0);
   const showRufus = useSharedValue(true);
 
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['article', id],
+    queryFn: () => getArticleById(+id),
+  });
+
   useEffect(() => {
     setTimeout(() => {
       bottomSheetRef.current?.snapToIndex(0, {
@@ -87,12 +92,11 @@ const DetailsPage = () => {
     };
   });
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['article', id],
-    queryFn: () => getArticleById(+id),
-  });
-
   const onPhrasePress = (phrase: string) => {
+    //
+  };
+
+  const onAddToCart = () => {
     //
   };
 
@@ -120,7 +124,7 @@ const DetailsPage = () => {
   return (
     <View className='flex-1 bg-white' style={{ paddingTop: 110 }}>
       {showOverlay && (
-        <View className='pt-12'>
+        <View className=''>
           <VapiOverlay />
         </View>
       )}

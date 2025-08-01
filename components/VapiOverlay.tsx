@@ -10,7 +10,7 @@ const VapiOverlay = () => {
     <Animated.View
       exiting={FadeOut.duration(400)}
       entering={FadeIn.duration(400)}
-      className='bg-slate-800  top-[70px] w-full h-full z-20 justify-center '
+      className='bg-slate-800  top-[110px] w-full h-full z-20 justify-center '
     >
       <Text>VapiOverlay</Text>
       <Button title='close' onPress={() => setShowOverlay(false)} />

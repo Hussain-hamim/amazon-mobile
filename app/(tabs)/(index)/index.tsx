@@ -22,7 +22,6 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -122,15 +121,6 @@ export default function HomeScreen() {
     };
   });
 
-  // if (isLoading) {
-  //   return (
-  //     <SafeAreaView className='flex-1 items-center justify-center bg-gray-50'>
-  //       <ActivityIndicator size='large' color='#3B82F6' />
-  //       <Text className='mt-4 text-lg text-gray-600'>Loading products...</Text>
-  //     </SafeAreaView>
-  //   );
-  // }
-
   if (isError) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -143,7 +133,7 @@ export default function HomeScreen() {
   }
 
   return (
-    <SafeAreaView edges={['bottom']} className='flex-1 bg-gray-50'>
+    <View className='flex-1 bg-gray-50'>
       <StatusBar style='light' />
 
       {showOverlay && <VapiOverlay />}
@@ -321,7 +311,7 @@ export default function HomeScreen() {
         }
         ListFooterComponent={<View className='h-20 ' />}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 

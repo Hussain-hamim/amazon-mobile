@@ -94,6 +94,7 @@ export default function SignIn() {
       });
 
       if (signInAttempt?.status === 'complete') {
+        //@ts-ignore
         await setActive({ session: signInAttempt.createdSessionId });
         router.dismissTo('/(tabs)/profile');
       } else {
@@ -160,6 +161,7 @@ export default function SignIn() {
 
         <TouchableOpacity
           className='flex-row  items-center mb-4'
+          //@ts-ignore
           onPress={() => setShowPassword((prev) => !prev)}
           accessibilityRole='checkbox'
           accessibilityState={{ checked: showPassword }}
