@@ -17,7 +17,7 @@ const SearchBar = ({ withBackButton = false }: SearchBarProps) => {
     if (showOverlay) {
       setShowOverlay(false);
     } else {
-      router.back();
+      router.push('/');
     }
   };
 
