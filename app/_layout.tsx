@@ -1,6 +1,9 @@
 import { StyledStack } from '@/components/navigation/stack';
 import '@/global.css';
 import { OverlayProvider } from '@/hooks/useOverlay';
+import { ClerkProvider } from '@clerk/clerk-expo';
+import { passkeys } from '@clerk/clerk-expo/passkeys';
+import { tokenCache } from '@clerk/clerk-expo/token-cache';
 import { Ionicons } from '@expo/vector-icons';
 import {
   DarkTheme,
@@ -79,24 +82,24 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    // <ClerkProvider
-    //   publishableKey={publishableKey}
-    //   tokenCache={tokenCache}
-    //   __experimental_passkeys={passkeys}
-    // >
-    <OverlayProvider>
-      {/* <ClerkLoaded> */}
-      <QueryClientProvider client={queryClient}>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <ThemeProvider
-            value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-          >
-            <InitialLayout />
-          </ThemeProvider>
-        </GestureHandlerRootView>
-      </QueryClientProvider>
-    </OverlayProvider>
-    // {/* </ClerkLoaded> */}
-    // </ClerkProvider>
+    <ClerkProvider
+      publishableKey={publishableKey}
+      tokenCache={tokenCache}
+      __experimental_passkeys={passkeys}
+    >
+      <OverlayProvider>
+        {/* <ClerkLoaded> */}
+        <QueryClientProvider client={queryClient}>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <ThemeProvider
+              value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+            >
+              <InitialLayout />
+            </ThemeProvider>
+          </GestureHandlerRootView>
+        </QueryClientProvider>
+      </OverlayProvider>
+      {/* </ClerkLoaded> */}
+    </ClerkProvider>
   );
 }
