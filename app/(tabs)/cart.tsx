@@ -39,7 +39,7 @@ export default function App() {
           renderItem={({ item }) => <CartItem article={item} />}
           contentContainerClassName='bg-white p-4 '
           ListHeaderComponent={
-            <View className='bg-white border-b border-gray-200 p-4 pt-2'>
+            <View className={`bg-white border-b border-gray-200 p-4  pt-10`}>
               <View className='flex-row justify-between items-center mb-3'>
                 <Text className='text-lg font-semibold'>Subtotal</Text>
                 <Text className='text-2xl font-bold'>€{total.toFixed(2)}</Text>

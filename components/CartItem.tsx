@@ -1,6 +1,7 @@
 import { Article } from '@/utils/api';
 import { useCartStore } from '@/utils/cartStore';
 import { Ionicons } from '@expo/vector-icons';
+import { Link } from 'expo-router';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 
 interface CartItemProps {
@@ -13,12 +14,14 @@ const CartItem = ({ article }: CartItemProps) => {
   return (
     <View className='flex-row items-center bg-white p-3 mb-3 border-b border-gray-200'>
       <View className='flex-row items-center gap-2'>
-        <View className='flex-col'>
-          <Image
-            source={{ uri: article.imageUrl }}
-            className='w-20 h-20 rounded-md mr-4'
-            resizeMode='cover'
-          />
+        <View className='flex-col '>
+          <Link href={`/(tabs)/${article.id}`}>
+            <Image
+              source={{ uri: article.imageUrl }}
+              className='w-20 h-20 rounded-md mr-4'
+              resizeMode='cover'
+            />
+          </Link>
           <Text className='font-bold text-lg mb-2'>
             €{article.price.toFixed(2)}
           </Text>
@@ -40,13 +43,17 @@ const CartItem = ({ article }: CartItemProps) => {
             </TouchableOpacity>
           </View>
         </View>
-        <View className='flex-1 flex-col justify-between'>
-          <Text className='font-bold text-base mb-1' numberOfLines={1}>
-            {article.title}
-          </Text>
-          <Text className='text-gray-500 text-xs mb-2' numberOfLines={2}>
-            {article.description}
-          </Text>
+        <View className='flex-1 flex-col justify-between '>
+          <Link href={`/(tabs)/${article.id}`} className='mb-1'>
+            <Text className='font-bold text-base' numberOfLines={1}>
+              {article.title}
+            </Text>
+          </Link>
+          <Link href={`/(tabs)/${article.id}`} className='mb-1'>
+            <Text className='text-gray-500 text-xs mb-2' numberOfLines={2}>
+              {article.description}
+            </Text>
+          </Link>
           <View className='flex-1' />
           <TouchableOpacity
             onPress={() => removeArticle(article)}
