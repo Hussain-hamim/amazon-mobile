@@ -1,20 +1,24 @@
 import CustomTabBar from '@/components/navigation/CustomTabBar';
 import { StyledTabs } from '@/components/navigation/tabs';
+import SearchBar from '@/components/SearchBar';
+import { useCartStore } from '@/utils/cartStore';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs, useRouter } from 'expo-router';
+import { Text, View } from 'react-native';
 
 const Layout = () => {
   const router = useRouter();
-
+  const { count } = useCartStore();
   return (
     <StyledTabs
-      headerClassName='bg-dark text-white'
+      headerClassName='bg-dark'
       tabBar={(props) => <CustomTabBar {...props} />}
     >
       <Tabs.Screen
         name='(index)'
         options={{
           headerShown: false,
+          title: '',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name='home-outline' color={color} size={size} />
           ),
@@ -31,16 +35,22 @@ const Layout = () => {
       <Tabs.Screen
         name='cart'
         options={{
-          // header: () => <SearchBar />,
+          header: () => <SearchBar />,
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name='cart-outline' color={color} size={size} />
+            <View className='relative'>
+              <Ionicons name='cart-outline' color={color} size={size} />
+              <View className='absolute -top-2 h-5 w-4 -right-4'>
+                <Text className='text-md text-orange-600 font-bold'>
+                  {count}
+                </Text>
+              </View>
+            </View>
           ),
         }}
       />
       <Tabs.Screen
         name='more'
         options={{
-          headerTitleStyle: { color: 'white' },
           tabBarIcon: ({ color, size }) => (
             <Ionicons name='menu-outline' color={color} size={size} />
           ),
@@ -58,5 +68,4 @@ const Layout = () => {
     </StyledTabs>
   );
 };
-
 export default Layout;

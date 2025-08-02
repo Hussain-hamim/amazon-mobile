@@ -1,14 +1,14 @@
 // import rufusIcon from "@/assets/images/rufus.png";
-import rufusIcon from "@/assets/images/rufus.png";
-import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { PlatformPressable } from "@react-navigation/elements";
-import React, { useEffect, useState } from "react";
-import { Image, View } from "react-native";
+import rufusIcon from '@/assets/images/rufus.png';
+import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { PlatformPressable } from '@react-navigation/elements';
+import React, { useEffect, useState } from 'react';
+import { Image, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-} from "react-native-reanimated";
+} from 'react-native-reanimated';
 
 // https://salamina.tech/blog/post/custom-tab-bar-tab-navigation-expo-react-native/
 export default function CustomTabBar({
@@ -41,13 +41,13 @@ export default function CustomTabBar({
 
   return (
     <View
-      className="flex-row bg-white  pb-2  relative border-t border-gray-200"
+      className='flex-row bg-white  pb-2   relative border-t border-gray-200'
       onLayout={(e) => setTabBarWidth(e.nativeEvent.layout.width)}
     >
       {/* Animated Tab Indicator */}
       {tabBarWidth > 0 && (
         <Animated.View
-          className="absolute top-0 left-0 z-10 bg-dark rounded-b-lg h-1"
+          className='absolute top-0 left-0 z-10 bg-dark rounded-b-lg h-1'
           style={[{ width: indicatorWidth }, indicatorStyle]}
         />
       )}
@@ -59,7 +59,7 @@ export default function CustomTabBar({
 
         const onPress = () => {
           const event = navigation.emit({
-            type: "tabPress",
+            type: 'tabPress',
             target: route.key,
             canPreventDefault: true,
           });
@@ -71,7 +71,7 @@ export default function CustomTabBar({
 
         const onLongPress = () => {
           navigation.emit({
-            type: "tabLongPress",
+            type: 'tabLongPress',
             target: route.key,
           });
         };
@@ -79,17 +79,17 @@ export default function CustomTabBar({
         return (
           <PlatformPressable
             key={index}
-            accessibilityRole="button"
+            accessibilityRole='button'
             accessibilityState={isFocused ? { selected: true } : {}}
             accessibilityLabel={options.tabBarAccessibilityLabel}
             onPress={onPress}
             onLongPress={onLongPress}
             className={`flex-1 items-center justify-center py-2 pb-safe`}
           >
-            {options.tabBarIcon && route.name !== "rufus" ? (
+            {options.tabBarIcon && route.name !== 'rufus' ? (
               options.tabBarIcon({
                 focused: isFocused,
-                color: "black",
+                color: 'black',
                 size: 24,
               })
             ) : (

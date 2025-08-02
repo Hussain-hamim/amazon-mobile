@@ -3,12 +3,14 @@ import SearchBar from '@/components/SearchBar';
 import VapiOverlay from '@/components/VapiOverlay';
 import { useOverlay } from '@/hooks/useOverlay';
 import { getArticleById } from '@/utils/api';
+import { useCartStore } from '@/utils/cartStore';
 import { Ionicons } from '@expo/vector-icons';
 import BottomSheet, {
   BottomSheetScrollView,
   BottomSheetView,
 } from '@gorhom/bottom-sheet';
 import { useQuery } from '@tanstack/react-query';
+import * as Haptics from 'expo-haptics';
 import { Link, Stack, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useMemo, useRef } from 'react';
 import {
@@ -52,9 +54,10 @@ const AnimatedBottomSheetView =
 const DetailsPage = () => {
   const { id } = useLocalSearchParams();
   const { showOverlay } = useOverlay();
+  const { addArticle } = useCartStore();
+
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['9%', '25%', '50%'], []);
-
   const currentPosition = useSharedValue(0);
   const showRufus = useSharedValue(true);
 
@@ -97,7 +100,8 @@ const DetailsPage = () => {
   };
 
   const onAddToCart = () => {
-    //
+    addArticle(data!);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
   if (isLoading) {
@@ -183,7 +187,7 @@ const DetailsPage = () => {
 
         {/* Bottom Buttons */}
         <TouchableOpacity
-          // onPress={onAddToCart}
+          onPress={onAddToCart}
           className='flex-1 mx-10 bg-[#FFD814] rounded-full items-center justify-center py-4 my-4'
         >
           <Text className='text-[#222] font-bold text-base'>Add to Basket</Text>
