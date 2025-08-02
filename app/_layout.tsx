@@ -10,6 +10,7 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native';
+import { StripeProvider } from '@stripe/stripe-react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack, useRouter } from 'expo-router';
 import { LogBox, TouchableOpacity, useColorScheme } from 'react-native';
@@ -91,11 +92,22 @@ export default function RootLayout() {
         {/* <ClerkLoaded> */}
         <QueryClientProvider client={queryClient}>
           <GestureHandlerRootView style={{ flex: 1 }}>
-            <ThemeProvider
-              value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+            <StripeProvider
+              publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY!}
+              merchantIdentifier='merchant.com.amazon-mobile'
+              urlScheme='amazon-mobile'
+              // This is required for 3D Secure authentication
+              threeDSecureParams={{
+                backgroundColor: '#ffffff',
+                timeout: 10,
+              }}
             >
-              <InitialLayout />
-            </ThemeProvider>
+              <ThemeProvider
+                value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+              >
+                <InitialLayout />
+              </ThemeProvider>
+            </StripeProvider>
           </GestureHandlerRootView>
         </QueryClientProvider>
       </OverlayProvider>

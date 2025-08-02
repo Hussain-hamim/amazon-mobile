@@ -249,7 +249,7 @@ export default function Profile() {
       {/* Footer */}
       <View className='py-4 px-4 mt-1 items-center'>
         <Text className='text-gray-500 text-xs'>
-          © 2025-2025, Amazon Mobile.
+          © 2025-2025, EaseShop Mobile.
         </Text>
       </View>
     </ScrollView>

@@ -44,10 +44,7 @@
               "host": "rested-owl-42.clerk.accounts.dev"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ]
     },
@@ -57,6 +54,14 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.hussainhamim.amazonmobile",
+          "publishableKey": "pk_test_51RL7vCF7q16adzOG3CYHCUJ45IPxSOxtznBQCDH32FeD22IZLIGh1N9cW9IOZAXX4DJZwQAg6U6UuPn1x5Ne4s0o00wzIEoPBQ",
+          "enableGooglePay": true
+        }
+      ],
       "expo-router",
       "@config-plugins/react-native-webrtc",
       "@daily-co/config-plugin-rn-daily-js",
