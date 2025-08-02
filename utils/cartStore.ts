@@ -1,9 +1,9 @@
 // import { Article } from '@/utils/api';
-// import {   } from '@/utils/storage';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { Article } from './api';
+import { zustandStorage } from './storage';
 
 export interface CartState {
   articles: (Article & { quantity: number })[];
@@ -75,7 +75,7 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: 'cart',
-      // storage: createJSONStorage(() => zustandStorage),
+      storage: createJSONStorage(() => zustandStorage),
     }
   )
 );
