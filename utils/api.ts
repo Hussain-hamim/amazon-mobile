@@ -56,15 +56,29 @@ export const createOrder = async (
   return response.json();
 };
 
-export const createPaymentIntent = async (amount: number, email: string) => {
+export const createPaymentIntent = async (
+  amount: number,
+  email: string,
+  token: string
+) => {
   const response = await fetch(`${API_URL}/orders/payment-sheet`, {
     method: 'POST',
-    body: JSON.stringify({ amount, currency: 'usd', email }),
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`, // 👈 Include the token
     },
+    body: JSON.stringify({ amount, currency: 'usd', email }),
   });
-  return response.json();
+
+  if (!response.ok) {
+    const errorText = await response.text(); // <- read it as plain text
+    console.error('Payment intent error:', response.status, errorText);
+    throw new Error(`Server error ${response.status}`);
+  }
+
+  const data = await response.json();
+  console.log('Payment intent data:', data);
+  return data;
 };
 
 export const getOrders = async (token: string): Promise<Order[]> => {

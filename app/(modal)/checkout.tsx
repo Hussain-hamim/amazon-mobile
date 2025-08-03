@@ -42,8 +42,14 @@ const Page = () => {
   });
 
   const { isPending: isPaymentPending, mutate: paymentMutation } = useMutation({
-    mutationFn: () =>
-      createPaymentIntent(total, user?.emailAddresses[0].emailAddress ?? ''),
+    mutationFn: async () => {
+      const token = await getToken();
+      return createPaymentIntent(
+        total,
+        user?.emailAddresses[0].emailAddress ?? '',
+        token!
+      );
+    },
     onSuccess: (data) => {
       const { paymentIntent, ephemeralKey, customer } = data;
 
