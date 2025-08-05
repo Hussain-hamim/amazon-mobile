@@ -146,12 +146,12 @@ export default function SignIn() {
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
-              placeholder='Amazon password'
+              placeholder='password'
               secureTextEntry={!showPassword}
               autoCapitalize='none'
               autoCorrect={false}
               textContentType='password'
-              accessibilityLabel='Amazon password'
+              accessibilityLabel='password'
             />
           )}
         />

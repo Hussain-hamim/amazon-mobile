@@ -1,10 +1,5 @@
 import { SignedIn, SignedOut, useAuth, useUser } from '@clerk/clerk-expo';
-import {
-  AntDesign,
-  FontAwesome,
-  Ionicons,
-  MaterialIcons,
-} from '@expo/vector-icons';
+import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Link, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
@@ -43,7 +38,6 @@ export default function Profile() {
     }
   };
 
-  // Mock user data for Amazon-like profile
   const userData = {
     name: user?.firstName || 'Welcome dear!',
     email: user?.primaryEmailAddress?.emailAddress || 'user@example.com',
@@ -55,8 +49,6 @@ export default function Profile() {
 
   const accountOptions = [
     { id: '1', title: 'Your Orders', icon: 'local-shipping' },
-    { id: '2', title: 'Login & Security', icon: 'shield' },
-    { id: '3', title: 'Your Addresses', icon: 'location-on' },
     { id: '4', title: 'Payment Options', icon: 'credit-card' },
   ];
 
@@ -105,25 +97,6 @@ export default function Profile() {
               )}
             </View>
           </View>
-
-          <View className='flex-row justify-between mt-6'>
-            <View className='items-center'>
-              <Text className='text-lg font-bold'>{userData.orders}</Text>
-              <Text className='text-gray-600 text-sm'>Orders</Text>
-            </View>
-            <View className='items-center'>
-              <Text className='text-lg font-bold'>{userData.wishlist}</Text>
-              <Text className='text-gray-600 text-sm'>Wishlist</Text>
-            </View>
-            <View className='items-center'>
-              <Text className='text-lg font-bold'>{userData.addresses}</Text>
-              <Text className='text-gray-600 text-sm'>Addresses</Text>
-            </View>
-            <View className='items-center'>
-              <Text className='text-lg font-bold'>0</Text>
-              <Text className='text-gray-600 text-sm'>Coupons</Text>
-            </View>
-          </View>
         </View>
 
         {/* Account Options */}
@@ -146,29 +119,6 @@ export default function Profile() {
               </Pressable>
             </Link>
           ))}
-        </View>
-
-        {/* Other Options */}
-        <View className='mt-4 bg-white'>
-          <Text className='font-bold p-4 pb-2 text-gray-800'>Other</Text>
-          <Pressable className='flex-row items-center justify-between p-4 border-b border-gray-100'>
-            <View className='flex-row items-center'>
-              <FontAwesome name='heart' size={24} color='#374151' />
-              <Text className='ml-4 text-gray-900 font-medium'>
-                Your Wish List
-              </Text>
-            </View>
-            <AntDesign name='right' size={16} color='#6B7280' />
-          </Pressable>
-          <Pressable className='flex-row items-center justify-between p-4 border-b border-gray-100'>
-            <View className='flex-row items-center'>
-              <Ionicons name='thumbs-up' size={24} color='#374151' />
-              <Text className='ml-4 text-gray-900 font-medium'>
-                Your Recommendations
-              </Text>
-            </View>
-            <AntDesign name='right' size={16} color='#6B7280' />
-          </Pressable>
         </View>
 
         {/* Sign Out */}
@@ -201,7 +151,7 @@ export default function Profile() {
           </View>
 
           <Text className='text-2xl font-bold text-gray-700 text-center mb-2'>
-            Welcome to Amazon
+            Welcome to EaseShop
           </Text>
           <Text className='text-gray-600 text-center mb-8'>
             Sign in for the best shopping experience
@@ -224,14 +174,14 @@ export default function Profile() {
               activeOpacity={0.9}
             >
               <Text className='text-center text-gray-600 font-medium'>
-                Create your Amazon account
+                Create your EaseShop account
               </Text>
             </TouchableOpacity>
           </Link>
 
           <View className='mt-8 w-full'>
             <Text className='text-center text-gray-500 text-xs mb-2'>
-              By continuing, you agree to Amazon's
+              By continuing, you agree to EaseShop
             </Text>
             <View className='flex-row justify-center'>
               <Pressable>

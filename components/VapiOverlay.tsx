@@ -1,7 +1,7 @@
 import { useOverlay } from '@/hooks/useOverlay';
 import React from 'react';
-import { Button, Text } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import Rufus from './Rufus';
 
 const VapiOverlay = () => {
   const { showOverlay, setShowOverlay } = useOverlay();
@@ -12,8 +12,7 @@ const VapiOverlay = () => {
       entering={FadeIn.duration(400)}
       className='bg-slate-800  top-[110px] w-full h-full z-20 justify-center '
     >
-      <Text>VapiOverlay</Text>
-      <Button title='close' onPress={() => setShowOverlay(false)} />
+      <Rufus />
     </Animated.View>
   );
 };

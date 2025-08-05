@@ -2,19 +2,20 @@ import Rufus from '@/components/Rufus';
 import SearchBar from '@/components/SearchBar';
 import VapiOverlay from '@/components/VapiOverlay';
 import { useOverlay } from '@/hooks/useOverlay';
-import { getArticleById } from '@/utils/api';
+import { createOrder, createPaymentIntent, getArticleById } from '@/utils/api';
 import { useCartStore } from '@/utils/cartStore';
 import { Ionicons } from '@expo/vector-icons';
 import BottomSheet, {
   BottomSheetScrollView,
   BottomSheetView,
 } from '@gorhom/bottom-sheet';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import * as Haptics from 'expo-haptics';
-import { Link, Stack, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useMemo, useRef } from 'react';
+import { Link, Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Dimensions,
   Image,
   ScrollView,
@@ -27,6 +28,9 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
+
+import { useAuth, useUser } from '@clerk/clerk-expo';
+import { useStripe } from '@stripe/stripe-react-native';
 
 const MOCK_RATING = 4.5;
 const MOCK_REVIEWS = 1193;
@@ -104,16 +108,124 @@ const DetailsPage = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
+  ///////////////////////
+  /// buy now code
+
+  // Add these new hooks for payment
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
+  const { user } = useUser();
+  const { getToken } = useAuth();
+  const [buyNowLoading, setBuyNowLoading] = useState(false);
+  const router = useRouter();
+
+  // Add these mutation hooks
+  const { isPending: isOrderPending, mutate: orderMutation } = useMutation({
+    mutationFn: async ({
+      article,
+      token,
+    }: {
+      article: Article;
+      token: string;
+    }) => {
+      // Convert single article to array with quantity 1 for order creation
+      const articles = [{ ...article, quantity: 1 }];
+      return createOrder(articles, token);
+    },
+    onSuccess: () => {
+      paymentMutation();
+    },
+    onError: (error) => {
+      console.log('Error creating order', error);
+      setBuyNowLoading(false);
+    },
+  });
+
+  const { isPending: isPaymentPending, mutate: paymentMutation } = useMutation({
+    mutationFn: async () => {
+      const token = await getToken();
+      return createPaymentIntent(
+        data!.price,
+        user?.emailAddresses[0].emailAddress ?? '',
+        token!
+      );
+    },
+    onSuccess: (data) => {
+      const { paymentIntent, ephemeralKey, customer } = data;
+      showPaymentSheet(paymentIntent, ephemeralKey, customer);
+    },
+    onError: (error) => {
+      console.log('Error creating payment intent', error);
+      setBuyNowLoading(false);
+    },
+  });
+
+  const showPaymentSheet = async (
+    paymentIntent: string,
+    ephemeralKey: string,
+    customer: string
+  ) => {
+    const { error } = await initPaymentSheet({
+      merchantDisplayName: 'hussainhussain.me',
+      customerId: customer,
+      customerEphemeralKeySecret: ephemeralKey,
+      paymentIntentClientSecret: paymentIntent,
+      allowsDelayedPaymentMethods: true,
+      defaultBillingDetails: {
+        name: user?.fullName ?? '',
+      },
+    });
+
+    if (error) {
+      console.log('Error initializing payment sheet', error);
+      setBuyNowLoading(false);
+    } else {
+      const { error } = await presentPaymentSheet();
+      if (error) {
+        console.log('Error presenting payment sheet (or canceled)', error);
+        setBuyNowLoading(false);
+      } else {
+        Alert.alert('Success', 'Your order is confirmed!', [
+          {
+            text: 'OK',
+            onPress: () => {
+              router.dismissAll();
+            },
+          },
+        ]);
+      }
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (!data) return;
+
+    const token = await getToken();
+    setBuyNowLoading(true);
+
+    if (!token) {
+      Alert.alert('Error', 'Please login to continue');
+      setBuyNowLoading(false);
+      return;
+    }
+
+    orderMutation({ article: data, token });
+  };
+
+  ///////////////////////////
+
   if (isLoading) {
     return (
-      <View
-        className='flex-1 items-center justify-center'
-        style={{ paddingTop: 120 }}
-      >
+      <View className='flex-1 items-center justify-center'>
+        <Stack.Screen
+          options={{
+            header: () => <SearchBar withBackButton />,
+          }}
+        />
         <ActivityIndicator size='large' />
       </View>
     );
   }
+
   if (isError || !data) {
     return (
       <View
@@ -192,8 +304,16 @@ const DetailsPage = () => {
         >
           <Text className='text-[#222] font-bold text-base'>Add to Basket</Text>
         </TouchableOpacity>
-        <TouchableOpacity className='flex-1 mx-10 bg-[#FFA41C] rounded-full items-center justify-center py-4'>
-          <Text className='text-[#222] font-bold text-base'>Buy Now</Text>
+        <TouchableOpacity
+          onPress={handleBuyNow}
+          className='flex-1 mx-10 bg-[#FFA41C] rounded-full items-center justify-center py-4'
+          disabled={buyNowLoading || isOrderPending || isPaymentPending}
+        >
+          {buyNowLoading || isOrderPending || isPaymentPending ? (
+            <ActivityIndicator color='#222' />
+          ) : (
+            <Text className='text-[#222] font-bold text-base'>Buy Now</Text>
+          )}
         </TouchableOpacity>
       </ScrollView>
 
