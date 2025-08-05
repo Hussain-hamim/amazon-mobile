@@ -3,7 +3,7 @@ import { useCartStore } from '@/utils/cartStore';
 import { useAuth, useUser } from '@clerk/clerk-expo';
 import { useStripe } from '@stripe/stripe-react-native';
 import { useMutation } from '@tanstack/react-query';
-import { useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   ActivityIndicator,
@@ -111,6 +111,8 @@ const Page = () => {
 
   return (
     <ScrollView contentContainerClassName='flex-1 p-5 bg-white'>
+      <Stack.Screen options={{ title: 'Checkout' }} />
+
       {(isOrderPending || isPaymentPending || checkoutLoading) && (
         <View className='flex-1 absolute top-0 left-0 right-0 bottom-0 justify-center items-center bg-black/20 z-20'>
           <ActivityIndicator size='large' className='text-dark' />
